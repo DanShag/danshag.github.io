@@ -8,8 +8,8 @@ let notificationTimeout = null;
 let mouseClickAudio = null;
 
 // Настройки подключения к Supabase (Инструкция по заполнению в database_setup_guide.md)
-const SUPABASE_URL = "";
-const SUPABASE_ANON_KEY = "";
+const SUPABASE_URL = "https://epvcpkylgqgyevirubhn.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable_DkBPR_bs6U7hWfxObPQ95Q_msbwwV-o";
 let supabaseClient = null;
 
 const systemSettings = {
@@ -65,7 +65,7 @@ function applySystemSettings() {
   const wallpaper = document.querySelector('.desktop-wallpaper');
   const bezel = document.querySelector('.monitor-bezel');
   const removeOuterBgCheckbox = document.getElementById('setting-remove-outer-bg');
-  
+
   const gl = document.getElementById('setting-disable-glitch');
   const bo = document.getElementById('setting-disable-boot');
   const st = document.getElementById('setting-stretch-screen');
@@ -156,7 +156,7 @@ function applySystemSettings() {
   const muteLine = document.querySelector('#icon-mute-sounds .sound-mute-line');
   const soundWaves = document.querySelectorAll('#icon-mute-sounds .sound-wave');
   const muteLabel = document.getElementById('mute-icon-label');
-  
+
   if (systemSettings.disableSounds) {
     if (muteLine) muteLine.style.display = 'block';
     soundWaves.forEach(w => w.style.display = 'none');
@@ -235,7 +235,7 @@ function playKeyboardClickSound() {
 // Симуляция запуска системы (BIOS)
 function startSystemBoot() {
   const bootScreen = document.getElementById('boot-screen');
-  
+
   if (systemSettings.disableBoot) {
     if (bootScreen) bootScreen.style.display = 'none';
     playAmbientSound();
@@ -246,7 +246,7 @@ function startSystemBoot() {
   if (bootScreen) {
     bootScreen.style.display = 'flex';
   }
-  
+
   playStartupSound();
 
   const logContainer = document.getElementById('bios-log');
@@ -270,7 +270,7 @@ function startSystemBoot() {
   ];
 
   let lineIndex = 0;
-  
+
   function printNextLine() {
     if (lineIndex < biosLines.length) {
       const p = document.createElement('div');
@@ -340,7 +340,7 @@ function unlockAudio() {
 
   const bootScreen = document.getElementById('boot-screen');
   const bootScreenActive = bootScreen && bootScreen.style.display !== 'none';
-  
+
   if (bootScreenActive) {
     // Если запуск идет и звук НЕ играет (был заблокирован) — играем его.
     // Если звук уже играет (успешный автозапуск) — НИЧЕГО не делаем, не сбиваем его на эмбиент!
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const introScreen = document.getElementById('intro-screen');
   const introText = document.getElementById('intro-text');
-  
+
   let visitCount = parseInt(getCookie('danshag_visits') || '0', 10);
   visitCount++;
   setCookie('danshag_visits', visitCount, 365);
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (content) {
         content.classList.add('intro-text-fadeout');
       }
-      
+
       setTimeout(() => {
         introScreen.classList.add('intro-fadeout');
         setTimeout(() => {
@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('keydown', (e) => {
     // Предотвращаем повтор звуков при зажатии клавиш, кроме клавиши Backspace (чтобы озвучивать каждый удаленный символ)
-    if (e.repeat && e.key !== 'Backspace') return; 
+    if (e.repeat && e.key !== 'Backspace') return;
     playKeyboardClickSound();
   });
 
@@ -581,11 +581,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (glInput) glInput.onchange = (e) => { systemSettings.disableGlitch = e.target.checked; saveSystemSettings(); applySystemSettings(); };
   if (boInput) boInput.onchange = (e) => { systemSettings.disableBoot = e.target.checked; saveSystemSettings(); applySystemSettings(); };
-  if (stInput) stInput.onchange = (e) => { 
-    systemSettings.stretchScreen = e.target.checked; 
+  if (stInput) stInput.onchange = (e) => {
+    systemSettings.stretchScreen = e.target.checked;
     if (e.target.checked) systemSettings.removeOuterBg = false; // Отключаем Убрать фон при растянутом режиме
-    saveSystemSettings(); 
-    applySystemSettings(); 
+    saveSystemSettings();
+    applySystemSettings();
   };
   if (bgInput) bgInput.onchange = (e) => { systemSettings.removeOuterBg = e.target.checked; saveSystemSettings(); applySystemSettings(); };
   if (waInput) waInput.onchange = (e) => { systemSettings.removeWallpaper = e.target.checked; saveSystemSettings(); applySystemSettings(); };
@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Инициализация функционала часов и перетаскивания окон
   updateClock();
   setInterval(updateClock, 1000);
-  
+
   const windowsList = document.querySelectorAll('.window');
   windowsList.forEach(win => {
     makeDraggable(win);
@@ -795,7 +795,7 @@ async function submitGuestbookMessage() {
     agreeCheck.checked = false;
     submitBtn.disabled = true;
     submitBtn.textContent = "ОТПРАВИТЬ!";
-    
+
     // Переключаемся на список сообщений
     toggleGuestbookView();
 
@@ -841,7 +841,7 @@ async function loadGuestbookMessages() {
     try {
       const stored = localStorage.getItem('danshag_local_guestbook');
       if (stored) messages = JSON.parse(stored);
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // Отрисовка
@@ -853,7 +853,7 @@ async function loadGuestbookMessages() {
       messages.forEach(item => {
         const entry = document.createElement('div');
         entry.className = 'guestbook-entry';
-        
+
         // Форматирование даты
         let dateStr = 'Давно';
         if (item.created_at) {
@@ -899,7 +899,7 @@ setInterval(() => {
   if (systemSettings.disableGlitch) return;
 
   document.body.classList.add('glitch-active');
-  
+
   // Убираем глитч через 300мс
   setTimeout(() => {
     document.body.classList.remove('glitch-active');
@@ -922,7 +922,7 @@ const openWindowsState = {
 function focusWindow(id) {
   const win = document.getElementById(id);
   if (!win) return;
-  
+
   // Убираем фокус со всех окон
   document.querySelectorAll('.window').forEach(w => {
     w.classList.remove('window-active');
@@ -932,12 +932,12 @@ function focusWindow(id) {
   win.classList.add('window-active');
   windowZIndex++;
   win.style.zIndex = windowZIndex;
-  
+
   // Обновляем состояние
   if (openWindowsState[id]) {
     openWindowsState[id].minimized = false;
   }
-  
+
   renderTaskbar();
 }
 
@@ -948,7 +948,7 @@ function openWindow(id) {
   win.style.display = 'flex';
   openWindowsState[id].open = true;
   openWindowsState[id].minimized = false;
-  
+
   focusWindow(id);
 }
 
@@ -959,7 +959,7 @@ function closeWindow(id) {
   win.style.display = 'none';
   openWindowsState[id].open = false;
   openWindowsState[id].minimized = false;
-  
+
   renderTaskbar();
 }
 
@@ -969,15 +969,15 @@ function minimizeWindow(id) {
 
   win.style.display = 'none';
   openWindowsState[id].minimized = true;
-  
+
   // Снимаем фокус
   win.classList.remove('window-active');
-  
+
   // Находим следующее активное окно
   const activeWindows = Object.keys(openWindowsState).filter(
     winId => openWindowsState[winId].open && !openWindowsState[winId].minimized
   );
-  
+
   if (activeWindows.length > 0) {
     // Фокусируемся на последнем открытом окне
     focusWindow(activeWindows[activeWindows.length - 1]);
@@ -1019,7 +1019,7 @@ function renderTaskbar() {
     if (state.open) {
       const btn = document.createElement('button');
       btn.className = 'taskbar-btn';
-      
+
       const winEl = document.getElementById(id);
       const isActive = winEl && winEl.classList.contains('window-active') && !state.minimized;
       if (isActive) {
@@ -1043,7 +1043,7 @@ function renderTaskbar() {
       } else if (state.icon === 'settings') {
         iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="4" y="4" width="8" height="8" fill="#fff" /></svg>`;
       }
-      
+
       btn.innerHTML = `${iconSvg}<span>${state.title}</span>`;
       btn.onclick = () => toggleWindowFromTaskbar(id);
       container.appendChild(btn);
@@ -1091,7 +1091,7 @@ function makeDraggable(windowEl) {
     pos2 = pos4 - e.clientY;
     pos3 = e.clientX;
     pos4 = e.clientY;
-    
+
     updatePosition();
   }
 
@@ -1138,7 +1138,7 @@ function makeDraggable(windowEl) {
 function setupStartMenu() {
   const startBtn = document.getElementById('start-btn');
   const desktop = document.getElementById('desktop-container');
-  
+
   // Создаем элемент меню пуск динамически
   const startMenu = document.createElement('div');
   startMenu.className = 'window';
@@ -1153,7 +1153,7 @@ function setupStartMenu() {
     height: auto !important;       /* Заставляем меню точно обтягивать контент */
     z-index: 9999;
   `;
-  
+
   startMenu.innerHTML = `
     <div class="window-body" style="padding: 2px; margin: 2px; background-color: #0c0c0c; border: none; overflow: visible;">
       <div style="display: flex;">
@@ -1236,9 +1236,9 @@ function setupStartMenu() {
       </div>
     </div>
   `;
-  
+
   desktop.appendChild(startMenu);
-  
+
   // Добавим стили для кнопок меню Пуск в документ
   const style = document.createElement('style');
   style.innerHTML = `
@@ -1286,7 +1286,7 @@ function setupStartMenu() {
   shutdownBtn.addEventListener('click', () => {
     startMenu.style.display = 'none';
     startBtn.classList.remove('active');
-    
+
     // Эффект выключения: гасим экран и выводим ретро сообщение
     const shutdownScreen = document.createElement('div');
     shutdownScreen.style.cssText = `
@@ -1308,9 +1308,9 @@ function setupStartMenu() {
       <div style="font-size: 14px; margin-top: 15px; color: #fff;">Теперь питание компьютера можно отключить.</div>
       <button id="btn-reboot" class="btn-retro" style="margin-top: 30px; padding: 6px 12px; font-size: 12px;">Перезагрузка</button>
     `;
-    
+
     document.body.appendChild(shutdownScreen);
-    
+
     document.getElementById('btn-reboot').addEventListener('click', () => {
       shutdownScreen.remove();
       // Сбрасываем куки для теста первого визита при перезапуске
@@ -1378,7 +1378,7 @@ async function initAudioPlayer() {
   stopBtn.onclick = stopTrack;
   prevBtn.onclick = prevTrack;
   nextBtn.onclick = nextTrack;
-  
+
   volume.oninput = (e) => {
     window.audioPlayerInstance.volume = e.target.value / 100;
   };
@@ -1428,14 +1428,14 @@ function renderPlaylist() {
 function playTrack(index) {
   if (index < 0 || index >= window.playerPlaylist.length) return;
   window.playerCurrentIndex = index;
-  
+
   const trackName = window.playerPlaylist[index];
   window.audioPlayerInstance.src = `./assets/music/${trackName}`;
   window.audioPlayerInstance.play().catch(e => console.log("Ошибка воспроизведения:", e));
-  
+
   document.getElementById('player-track-title').textContent = trackName.replace(/\.[^/.]+$/, "");
   document.getElementById('player-play').textContent = '⏸';
-  
+
   renderPlaylist();
 }
 
@@ -1599,7 +1599,7 @@ function executeSystemDestruction(output) {
           // Запись состояния и полный блэкаут
           setCookie('danshag_sys_deleted', 'true', 365);
           localStorage.setItem('danshag_sys_deleted', 'true');
-          
+
           document.body.innerHTML = `
             <div id="critical-system-overlay" style="background-color: #000000; color: #ff3333;">
               <div style="font-size: 24px; font-weight: bold;">Ну и что ты наделал?</div>

@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>danshag</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="description"
+    content="Ретро-футуристический сайт-визитка DanShag в стиле Windows 2000. Вся информация об увлечениях, проектах и конфигурации девайсов.">
+</head>
+
+<body>
+
+  <!-- Глитч-оверлей для вспышек и помех -->
+  <div class="glitch-overlay"></div>
+
+  <!-- Экран интро (для Cookie-логики) -->
+  <div id="intro-screen" class="intro-active">
+    <div id="intro-content">
+      <span id="intro-text">Нужно лишь смириться с тем, что наступит время...</span>
+    </div>
+  </div>
+
+  <!-- Основной ретро-монитор с соотношением сторон 4:3 -->
+  <div class="monitor-wrapper">
+    <div class="monitor-bezel">
+      <div id="desktop-container">
+        <!-- Экран загрузки системы (BIOS + OS Boot) -->
+        <div id="boot-screen" style="display: none;">
+          <div id="bios-log"></div>
+          <div id="os-loading" style="display: none;">
+            <div class="xp-welcome-text" id="xp-welcome-text">Добро пожаловать, путник!</div>
+            <div class="xp-loading-container">
+              <div class="xp-loading-logo">DanShag OS</div>
+              <div class="xp-loading-bar"><span></span></div>
+            </div>
+          </div>
+          <button id="skip-boot-btn">Пропустить</button>
+        </div>
+        <!-- Глитчащиеся обои (по умолчанию Windows XP) -->
+        <div class="desktop-wallpaper"></div>
+
+        <!-- Рабочий стол -->
+        <div class="desktop-area">
+
+          <div class="desktop-center-container">
+            <!-- Текст приветствия вверху по центру -->
+            <div class="welcome-text">
+              <h1 class="welcome-title">Добро пожаловать, <span id="welcome-username">путник</span>.</h1>
+              <p class="welcome-subtitle">Я <span class="shake-text highlight-yellow">DanShag</span></p>
+            </div>
+
+            <!-- Иконки на рабочем столе ниже текста по центру -->
+            <div class="desktop-icons-container">
+              <!-- Иконка: Кто ты? (Чистый пиксельный стиль DS) -->
+              <button class="desktop-icon" id="icon-whoami" onclick="openWindow('win-whoami')">
+                <svg class="pixel-icon ds-icon-glowing icon-large" viewBox="0 0 16 16" width="48" height="48">
+                  <rect x="1" y="3" width="2" height="10" fill="#00ff00" />
+                  <rect x="3" y="3" width="4" height="2" fill="#00ff00" />
+                  <rect x="3" y="11" width="4" height="2" fill="#00ff00" />
+                  <rect x="7" y="5" width="2" height="6" fill="#00ff00" />
+                  <rect x="10" y="3" width="5" height="2" fill="#00ff00" />
+                  <rect x="10" y="5" width="2" height="2" fill="#00ff00" />
+                  <rect x="10" y="7" width="5" height="2" fill="#00ff00" />
+                  <rect x="13" y="9" width="2" height="2" fill="#00ff00" />
+                  <rect x="10" y="11" width="5" height="2" fill="#00ff00" />
+                </svg>
+                <span class="icon-label">Кто ты?</span>
+              </button>
+
+              <!-- Иконка: Проекты -->
+              <button class="desktop-icon" id="icon-projects" onclick="openWindow('win-projects')">
+                <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+                  <rect x="2" y="2" width="12" height="12" fill="#000080" />
+                  <rect x="3" y="3" width="10" height="10" fill="#0000ff" />
+                  <rect x="4" y="2" width="6" height="4" fill="#c0c0c0" />
+                  <rect x="5" y="3" width="2" height="2" fill="#fff" />
+                  <rect x="4" y="8" width="8" height="5" fill="#ffffff" />
+                  <rect x="5" y="9" width="6" height="1" fill="#ff0000" />
+                  <rect x="5" y="11" width="6" height="1" fill="#0000ff" />
+                </svg>
+                <span class="icon-label">Проекты</span>
+              </button>
+
+              <!-- Иконка: Девайсы -->
+              <button class="desktop-icon" id="icon-config" onclick="openWindow('win-config')">
+                <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+                  <rect x="1" y="1" width="12" height="9" fill="#808080" />
+                  <rect x="2" y="2" width="10" height="7" fill="#c0c0c0" />
+                  <rect x="3" y="3" width="8" height="5" fill="#000000" />
+                  <rect x="4" y="4" width="2" height="2" fill="#00ffff" />
+                  <rect x="6" y="10" width="2" height="2" fill="#808080" />
+                  <rect x="4" y="12" width="6" height="1" fill="#808080" />
+                  <rect x="12" y="4" width="3" height="9" fill="#808080" />
+                  <rect x="13" y="5" width="1" height="1" fill="#000000" />
+                  <rect x="13" y="7" width="1" height="1" fill="#00ff00" />
+                </svg>
+                <span class="icon-label">Девайсы</span>
+              </button>
+
+              <!-- Иконка: Плеер -->
+              <button class="desktop-icon" id="icon-player" onclick="openWindow('win-player')">
+                <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+                  <rect x="3" y="2" width="10" height="2" fill="#d4af37" />
+                  <rect x="2" y="4" width="2" height="8" fill="#d4af37" />
+                  <rect x="12" y="4" width="2" height="8" fill="#d4af37" />
+                  <rect x="1" y="9" width="4" height="4" fill="#00ffcc" />
+                  <rect x="11" y="9" width="4" height="4" fill="#00ffcc" />
+                </svg>
+                <span class="icon-label">Плеер</span>
+              </button>
+
+              <!-- Иконка: CMD -->
+              <button class="desktop-icon" id="icon-cmd" onclick="openWindow('win-cmd')">
+                <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+                  <rect x="1" y="1" width="14" height="14" fill="#000000" />
+                  <rect x="2" y="2" width="12" height="12" fill="#111111" stroke="#333" stroke-width="1" />
+                  <path d="M4,4 L7,6 L4,8" stroke="#00ff00" stroke-width="1" fill="none" />
+                  <line x1="8" y1="8" x2="11" y2="8" stroke="#00ff00" stroke-width="1.5" />
+                </svg>
+                <span class="icon-label">CMD</span>
+              </button>
+
+              <!-- Иконка: Блокнот -->
+              <button class="desktop-icon" id="icon-notepad" onclick="openWindow('win-notepad')">
+                <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+                  <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
+                  <rect x="1" y="2" width="13" height="12" fill="#ffffff" />
+                  <line x1="4" y1="4" x2="11" y2="4" stroke="#0000ff" stroke-width="1" />
+                  <line x1="4" y1="7" x2="12" y2="7" stroke="#000" stroke-width="1" />
+                  <line x1="4" y1="10" x2="9" y2="10" stroke="#000" stroke-width="1" />
+                </svg>
+                <span class="icon-label">Блокнот</span>
+              </button>
+
+            </div>
+          </div>
+
+          <!-- ================= ОКНО: КТО ТЫ ================= -->
+          <div class="window" id="win-whoami" style="top: 15%; left: 10%;">
+            <div class="window-header">
+              <div class="window-title-container">
+                <!-- Заменена на чистый логотип DS в заголовке -->
+                <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                  <rect x="1" y="3" width="2" height="10" fill="#fff" />
+                  <rect x="3" y="3" width="4" height="2" fill="#fff" />
+                  <rect x="3" y="11" width="4" height="2" fill="#fff" />
+                  <rect x="7" y="5" width="2" height="6" fill="#fff" />
+                  <rect x="10" y="3" width="5" height="2" fill="#fff" />
+                  <rect x="10" y="5" width="2" height="2" fill="#fff" />
+                  <rect x="10" y="7" width="5" height="2" fill="#fff" />
+                  <rect x="13" y="9" width="2" height="2" fill="#fff" />
+                  <rect x="10" y="11" width="5" height="2" fill="#fff" />
+                </svg>
+                <span class="window-title">Кто ты?</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn btn-minimize" onclick="minimizeWindow('win-whoami')">_</button>
+                <button class="win-btn btn-close" onclick="closeWindow('win-whoami')">X</button>
+              </div>
+            </div>
+            <div class="window-body">
+              <h2 class="section-title">DanShag - это...</h2>
+
+              <div class="info-block block-blue">
+                <h3 class="subsection-title">Основное</h3>
+                <div class="block-content">
+                  Приветствую! Меня зовут Данила, в интернете на данный момент известен как DanShag (Danya Shagalin).
+                  Мне 15 лет, родился и проживаю в России, Магнитогорске. <br><br>Набрал 1000 подписчиков на YouTube,
+                  после чего психанул и забил. После чего пересоздал канал и веду его по сей день.<br\>
+                    <br\>
+                </div>
+              </div>
+
+              <div class="info-block block-red">
+                <h3 class="subsection-title">Увлечения/интересы/вкусы</h3>
+                <div class="block-content">
+                  Увлекаюсь созданием видео, монтажом, GFX-дизайнингом. Слегка заинтересован в программировании, а также
+                  очень много времени посвящаю компьютерному железу. Слушаю абсолютно разнообразну музыку, топ 10 моих
+                  любимых вы можете послушать в "Плеере".
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= ОКНО: ПРОЕКТЫ ================= -->
+          <div class="window" id="win-projects" style="top: 20%; left: 15%; display: none;">
+            <div class="window-header">
+              <div class="window-title-container">
+                <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                  <rect x="2" y="2" width="12" height="12" fill="#fff" />
+                  <rect x="4" y="2" width="6" height="4" fill="#808080" />
+                  <rect x="4" y="8" width="8" height="5" fill="#808080" />
+                </svg>
+                <span class="window-title">Проекты</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn btn-minimize" onclick="minimizeWindow('win-projects')">_</button>
+                <button class="win-btn btn-close" onclick="closeWindow('win-projects')">X</button>
+              </div>
+            </div>
+            <div class="window-body">
+              <h2 class="section-title">Активные проекты</h2>
+
+              <!-- Revenge Demid (Перенесён на первое место) -->
+              <div class="info-block block-yellow-shimmer">
+                <h3 class="subsection-title">Revenge Demid</h3>
+                <div class="block-content">
+                  <p>Revenge Demid — это сюжетная игра с элементами выживания и ретро-эстетикой. Мы создаем уникальный
+                    мир с атмосферой загадочности и опасности, вдохновленный классическими играми 90-х.</p>
+                  <div class="button-row">
+                    <button class="btn-retro btn-yellow-disabled" disabled>В разработке.</button>
+                    <a href="https://t.me/RVNGDemid" target="_blank" class="btn-retro btn-blue-link">Dev-канал
+                      проекта</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Подзаголовок для закрытых проектов -->
+              <h2 class="section-title" style="margin-top: 18px;">Ликвидированные проекты</h2>
+
+              <!-- DSTech (Перенесён сюда и окрашен в красный светящийся цвет) -->
+              <div class="info-block block-red-glow">
+                <h3 class="subsection-title">DSTech</h3>
+                <div class="block-content">
+                  <p>Игровой бот в Telegram на основе WebApp. В нём можно было выбивать компелктующие, собирать
+                    компьютеры, продавать на Авито, майнить и много ещё разных систем. Из-за высоких проблем с
+                    уязвимостью бота, а также отбитого желания проект был закрыт.</p>
+                  <div class="button-row">
+                    <button class="btn-retro btn-liquidated" disabled>Проект ликвидирован</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TheWin (Новый ликвидированный проект с красным свечением) -->
+              <div class="info-block block-red-glow">
+                <h3 class="subsection-title">TheWin</h3>
+                <div class="block-content">
+                  <p>Ужасная попытка в сборки Windows. Существовало две разновидности сборки, основанных на Win10 22H2:
+                    TheWin - была обычной сборкой, с сразу накинутыми программами и обоями в папке. TheWinGO - такая же
+                    сборка, но в край урезанная. Поскольку сборки в принципе не обделены вниманием, проект был забыт и
+                    закрыт.</p>
+                  <div class="button-row">
+                    <button class="btn-retro btn-liquidated" disabled>Проект ликвидирован</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ================= ОКНО: ДЕВАЙСЫ / КОНФИГУРАЦИЯ ================= -->
+          <div class="window window-large" id="win-config" style="top: 10%; left: 20%; display: none;">
+            <div class="window-header">
+              <div class="window-title-container">
+                <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                  <rect x="1" y="1" width="12" height="9" fill="#fff" />
+                  <rect x="3" y="3" width="8" height="5" fill="#000" />
+                  <rect x="6" y="10" width="2" height="2" fill="#fff" />
+                  <rect x="4" y="12" width="6" height="1" fill="#fff" />
+                </svg>
+                <span class="window-title">Девайсы/Конфигурация</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn btn-minimize" onclick="minimizeWindow('win-config')">_</button>
+                <button class="win-btn btn-close" onclick="closeWindow('win-config')">X</button>
+              </div>
+            </div>
+            <div class="window-body">
+              <h2 class="section-title">Эти ваши компутеры, телефоны и т.п</h2>
+
+              <!-- Блок: Основной компьютер -->
+              <div class="info-block block-red-glow">
+                <h3 class="subsection-title">Основной компьютер</h3>
+                <div class="block-content">
+                  <table class="specs-table">
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- MB -->
+                          <rect x="1" y="1" width="14" height="14" fill="#008000" />
+                          <rect x="3" y="3" width="4" height="4" fill="#c0c0c0" />
+                          <rect x="9" y="3" width="4" height="10" fill="#0000ff" />
+                          <rect x="3" y="9" width="4" height="4" fill="#000" />
+                        </svg>
+                        MB:
+                      </td>
+                      <td class="spec-value">AORUS B450 ELITE [AM4]</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- CPU -->
+                          <rect x="2" y="2" width="12" height="12" fill="#808080" />
+                          <rect x="4" y="4" width="8" height="8" fill="#c0c0c0" />
+                          <rect x="6" y="6" width="4" height="4" fill="#000" />
+                          <!-- Pins -->
+                          <rect x="1" y="4" width="1" height="1" fill="#d4af37" />
+                          <rect x="1" y="7" width="1" height="1" fill="#d4af37" />
+                          <rect x="1" y="10" width="1" height="1" fill="#d4af37" />
+                          <rect x="14" y="4" width="1" height="1" fill="#d4af37" />
+                          <rect x="14" y="7" width="1" height="1" fill="#d4af37" />
+                          <rect x="14" y="10" width="1" height="1" fill="#d4af37" />
+                        </svg>
+                        CPU:
+                      </td>
+                      <td class="spec-value">Ryzen 7 1700X [Overclocked: 3.85GHz, 1.38V]</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- RAM -->
+                          <rect x="1" y="5" width="14" height="6" fill="#008000" />
+                          <rect x="2" y="4" width="12" height="1" fill="#c0c0c0" />
+                          <!-- Chips -->
+                          <rect x="3" y="6" width="2" height="3" fill="#000" />
+                          <rect x="6" y="6" width="2" height="3" fill="#000" />
+                          <rect x="9" y="6" width="2" height="3" fill="#000" />
+                          <rect x="12" y="6" width="2" height="3" fill="#000" />
+                        </svg>
+                        RAM:
+                      </td>
+                      <td class="spec-value">Kingston Renegade DDR4 16GBx2 3600MHz</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- GPU -->
+                          <rect x="1" y="3" width="14" height="10" fill="#008000" />
+                          <rect x="14" y="5" width="1" height="6" fill="#c0c0c0" />
+                          <rect x="5" y="5" width="6" height="6" fill="#000" />
+                          <circle cx="8" cy="8" r="2" fill="#ff0000" />
+                        </svg>
+                        GPU:
+                      </td>
+                      <td class="spec-value">ASUS STRIX GTX 1070 [Overclocked: +550 memory, +125 core]</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- PSU -->
+                          <rect x="2" y="2" width="12" height="12" fill="#303030" />
+                          <circle cx="8" cy="8" r="4" fill="#000" />
+                          <rect x="10" y="4" width="3" height="3" fill="#808080" />
+                        </svg>
+                        PSU:
+                      </td>
+                      <td class="spec-value">PCCOOLER YN850</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- HDD -->
+                          <rect x="3" y="1" width="10" height="14" fill="#808080" />
+                          <rect x="4" y="2" width="8" height="12" fill="#c0c0c0" />
+                          <circle cx="8" cy="6" r="3" fill="#fff" stroke="#000" stroke-width="1" />
+                          <rect x="6" y="11" width="4" height="2" fill="#000" />
+                        </svg>
+                        HDD:
+                      </td>
+                      <td class="spec-value">Toshiba 500GB + WD 160GB</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- SSD -->
+                          <rect x="2" y="4" width="12" height="8" fill="#404040" />
+                          <rect x="3" y="5" width="10" height="6" fill="#606060" />
+                          <rect x="11" y="7" width="2" height="2" fill="#0000ff" />
+                        </svg>
+                        SSD:
+                      </td>
+                      <td class="spec-value">XPG SPECTRIX S40G 512GB [NVMe]</td>
+                    </tr>
+                  </table>
+                  <p class="spec-note">* Мощь 2017 года. Больше нечего сказать.</p>
+                </div>
+              </div>
+
+              <!-- Блок: Второй компьютер -->
+              <div class="info-block block-dark-gray">
+                <h3 class="subsection-title">Второй компьютер (Non-Active)</h3>
+                <div class="block-content">
+                  <table class="specs-table">
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <rect x="1" y="1" width="14" height="14" fill="#505050" />
+                          <rect x="3" y="3" width="4" height="4" fill="#707070" />
+                          <rect x="9" y="3" width="4" height="10" fill="#303030" />
+                        </svg>
+                        MB:
+                      </td>
+                      <td class="spec-value">Gigabyte GA-MA74GM-S2 rev4.4 [AM3]</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <rect x="2" y="2" width="12" height="12" fill="#505050" />
+                          <rect x="4" y="4" width="8" height="8" fill="#707070" />
+                        </svg>
+                        CPU:
+                      </td>
+                      <td class="spec-value">Athlon X2 64 5000+</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <rect x="1" y="5" width="14" height="6" fill="#505050" />
+                          <rect x="3" y="6" width="2" height="3" fill="#202020" />
+                          <rect x="6" y="6" width="2" height="3" fill="#202020" />
+                        </svg>
+                        RAM:
+                      </td>
+                      <td class="spec-value">4GB DDR2</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <rect x="1" y="3" width="14" height="10" fill="#505050" />
+                          <rect x="5" y="5" width="6" height="6" fill="#202020" />
+                        </svg>
+                        GPU:
+                      </td>
+                      <td class="spec-value">Radeon 2100 [в материнке]</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <rect x="2" y="2" width="12" height="12" fill="#202020" />
+                          <circle cx="8" cy="8" r="4" fill="#101010" />
+                        </svg>
+                        PSU:
+                      </td>
+                      <td class="spec-value">Velton 450W</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <rect x="3" y="1" width="10" height="14" fill="#505050" />
+                          <circle cx="8" cy="6" r="2" fill="#202020" />
+                        </svg>
+                        HDD:
+                      </td>
+                      <td class="spec-value">Умер.</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <rect x="2" y="4" width="12" height="8" fill="#303030" />
+                          <rect x="11" y="7" width="2" height="2" fill="#202020" />
+                        </svg>
+                        SSD:
+                      </td>
+                      <td class="spec-value">Отсутствует.</td>
+                    </tr>
+                  </table>
+                  <p class="spec-note">* Топ 2005 года, в данный момент в разборе.</p>
+                </div>
+              </div>
+
+              <!-- Блок: Девайсы -->
+              <div class="info-block block-darkred-glow">
+                <h3 class="subsection-title">Девайсы</h3>
+                <div class="block-content">
+                  <table class="specs-table">
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- Клавиатура -->
+                          <rect x="1" y="4" width="14" height="8" fill="#808080" />
+                          <rect x="2" y="5" width="12" height="6" fill="#c0c0c0" />
+                          <rect x="3" y="6" width="10" height="4" fill="#000" />
+                          <!-- Key details -->
+                          <rect x="4" y="7" width="1" height="1" fill="#fff" />
+                          <rect x="6" y="7" width="1" height="1" fill="#fff" />
+                          <rect x="8" y="7" width="1" height="1" fill="#fff" />
+                          <rect x="10" y="7" width="2" height="1" fill="#fff" />
+                        </svg>
+                        Клавиатура:
+                      </td>
+                      <td class="spec-value">AJAZZ AK820 PRO HE [Yellow Switch]</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- Мышь -->
+                          <rect x="4" y="2" width="8" height="12" fill="#808080" rx="3" />
+                          <rect x="4" y="2" width="4" height="5" fill="#c0c0c0" />
+                          <rect x="8" y="2" width="4" height="5" fill="#c0c0c0" />
+                          <line x1="8" y1="2" x2="8" y2="7" stroke="#000" stroke-width="1" />
+                          <rect x="7" y="3" width="2" height="2" fill="#ff0000" />
+                        </svg>
+                        Мышь:
+                      </td>
+                      <td class="spec-value">ATTACK SHARK X11</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- Микрофон -->
+                          <rect x="6" y="2" width="4" height="7" fill="#303030" rx="2" />
+                          <rect x="7" y="3" width="2" height="2" fill="#c0c0c0" />
+                          <!-- Стойка -->
+                          <line x1="8" y1="9" x2="8" y2="13" stroke="#808080" stroke-width="2" />
+                          <line x1="5" y1="13" x2="11" y2="13" stroke="#808080" stroke-width="2" />
+                        </svg>
+                        Микрофон:
+                      </td>
+                      <td class="spec-value">FIFINE A6V</td>
+                    </tr>
+                    <tr>
+                      <td class="spec-label">
+                        <svg class="pixel-icon spec-icon" viewBox="0 0 16 16" width="16" height="16">
+                          <!-- Монитор -->
+                          <rect x="1" y="2" width="14" height="10" fill="#808080" />
+                          <rect x="2" y="3" width="12" height="8" fill="#000" />
+                          <rect x="6" y="12" width="4" height="2" fill="#808080" />
+                          <rect x="4" y="14" width="8" height="1" fill="#808080" />
+                        </svg>
+                        Мониторы:
+                      </td>
+                      <td class="spec-value">LG 23MP55</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Блок: Телефоны -->
+              <div class="info-block block-darkblue-redglow">
+                <h3 class="subsection-title">Телефоны</h3>
+                <div class="block-content">
+
+                  <!-- Телефон 1 -->
+                  <div class="phone-item phone-working">
+                    <div class="phone-header">
+                      <svg class="pixel-icon phone-icon" viewBox="0 0 16 16" width="16" height="16">
+                        <rect x="4" y="1" width="8" height="14" fill="#a0c0a0" />
+                        <rect x="5" y="2" width="6" height="9" fill="#000" />
+                        <rect x="7" y="12" width="2" height="2" fill="#808080" />
+                      </svg>
+                      <span class="phone-name">Samsung Galaxy A12S (Nacho). 4/64</span>
+                      <span class="phone-status status-green">Состояние: Полностью рабочий.</span>
+                    </div>
+                    <p class="phone-comment">Комментарий к телефону: Я навсегда с ним, лучший телефон. (сарказм)</p>
+                  </div>
+
+                  <!-- Телефон 2 -->
+                  <div class="phone-item phone-halfworking">
+                    <div class="phone-header">
+                      <svg class="pixel-icon phone-icon" viewBox="0 0 16 16" width="16" height="16">
+                        <rect x="4" y="1" width="8" height="14" fill="#d0d0a0" />
+                        <!-- Разбитый экран -->
+                        <rect x="5" y="2" width="6" height="9" fill="#202010" />
+                        <line x1="5" y1="2" x2="10" y2="10" stroke="#ffff00" stroke-width="1" />
+                        <rect x="7" y="12" width="2" height="2" fill="#808080" />
+                      </svg>
+                      <span class="phone-name">Samsung Galaxy A51. 4/64</span>
+                      <span class="phone-status status-yellow">Состояние: Рабочий, но дисплей в сделку не входил.</span>
+                    </div>
+                    <p class="phone-comment">Комментарий к телефону: Просто. Охеренный. (из бюджеток)</p>
+                  </div>
+
+                  <!-- Телефон 3 -->
+                  <div class="phone-item phone-dead">
+                    <div class="phone-header">
+                      <svg class="pixel-icon phone-icon" viewBox="0 0 16 16" width="16" height="16">
+                        <rect x="4" y="1" width="8" height="14" fill="#707070" />
+                        <rect x="5" y="2" width="6" height="9" fill="#ff0000" />
+                        <line x1="5" y1="2" x2="10" y2="11" stroke="#000" stroke-width="1" />
+                        <line x1="10" y1="2" x2="5" y2="11" stroke="#000" stroke-width="1" />
+                        <rect x="7" y="12" width="2" height="2" fill="#505050" />
+                      </svg>
+                      <span class="phone-name">Samsung Galaxy A10. 2/32</span>
+                      <span class="phone-status status-red">Состояние: В хламину.</span>
+                    </div>
+                    <p class="phone-comment">Комментарий к телефону: Вечная память.</p>
+                  </div>
+
+                  <p class="spec-note spec-hate-samsung">я ненавижу самсунг если что, оно так получилось(</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div> <!-- desktop-area -->
+
+        <!-- ================= ОКНО: РЕТРО-ПЛЕЕР ================= -->
+        <div class="window" id="win-player" style="top: 15%; left: 25%; display: none;">
+          <div class="window-header">
+            <div class="window-title-container">
+              <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                <rect x="3" y="2" width="10" height="2" fill="#fff" />
+                <rect x="2" y="4" width="2" height="8" fill="#fff" />
+                <rect x="12" y="4" width="2" height="8" fill="#fff" />
+              </svg>
+              <span class="window-title">DS Audio Player (AIMP style)</span>
+            </div>
+            <div class="window-controls">
+              <button class="win-btn btn-minimize" onclick="minimizeWindow('win-player')">_</button>
+              <button class="win-btn btn-close" onclick="closeWindow('win-player')">X</button>
+            </div>
+          </div>
+          <div class="window-body player-window-body">
+            <div class="player-top-panel">
+              <div class="player-display">
+                <div class="player-track-scroller">
+                  <span id="player-track-title">Загрузка треков...</span>
+                </div>
+                <div class="player-time-info">
+                  <span id="player-time-current">00:00</span>
+                  <span id="player-time-duration">/ 00:00</span>
+                </div>
+              </div>
+
+              <div class="player-progress-bar">
+                <input type="range" id="player-seek" value="0" min="0" max="100">
+              </div>
+
+              <div class="player-controls-row">
+                <div class="player-main-btns">
+                  <button class="player-btn" id="player-prev">◀◀</button>
+                  <button class="player-btn" id="player-play">▶</button>
+                  <button class="player-btn" id="player-stop">■</button>
+                  <button class="player-btn" id="player-next">▶▶</button>
+                </div>
+                <div class="player-volume-control">
+                  <span class="volume-speaker-icon">🔊</span>
+                  <input type="range" id="player-volume" value="70" min="0" max="100">
+                </div>
+              </div>
+            </div>
+
+            <div class="player-playlist" id="player-playlist">
+              <!-- Генерируется из JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ОКНО: ГОСТЕВУХА ================= -->
+        <div class="window" id="win-guestbook" style="top: 15%; left: 15%; display: none; width: 420px; z-index: 100;">
+          <div class="window-header">
+            <div class="window-title-container">
+              <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                <rect x="2" y="1" width="10" height="14" rx="1" fill="#c0c0c0" stroke="#000" stroke-width="1" />
+                <rect x="3" y="2" width="8" height="12" fill="#ffffff" />
+                <line x1="5" y1="4" x2="9" y2="4" stroke="#000" stroke-width="1" />
+                <line x1="5" y1="7" x2="9" y2="7" stroke="#000" stroke-width="1" />
+              </svg>
+              <span class="window-title">Гостевуха</span>
+            </div>
+            <div class="window-controls">
+              <button class="win-btn btn-minimize" onclick="minimizeWindow('win-guestbook')">_</button>
+              <button class="win-btn btn-close" onclick="closeWindow('win-guestbook')">X</button>
+            </div>
+          </div>
+          <div class="window-body guestbook-window-body guestbook-bg">
+            
+            <!-- Панель переключения вкладок вверху -->
+            <div class="guestbook-header-menu">
+              <button id="guestbook-btn-toggle-view" class="btn-retro">Сообщения пользователей</button>
+            </div>
+
+            <!-- Раздел 1: Написать сообщение (активен по умолчанию) -->
+            <div id="guestbook-write-view">
+              <div class="guestbook-title-block">
+                <h2 class="guestbook-main-title">Книга жалоб и предложений...</h2>
+                <div class="guestbook-sub-title">...но жалобы никто не учтёт.</div>
+              </div>
+
+              <!-- Поле имени -->
+              <div class="info-block block-purple" style="margin-top: 12px;">
+                <h3 class="subsection-title">Как тебя зовут?</h3>
+                <div class="block-content" style="display: flex; flex-direction: column; gap: 6px;">
+                  <input type="text" id="guestbook-name-input" placeholder="Введите имя..." maxlength="15" autocomplete="off"
+                    style="width: 100%; padding: 4px; font-family: '8bitoperator', monospace; font-size: 11px; background-color: #0c0c0c; border: 1.5px inset #222; color: #fff; outline: none;">
+                  <div style="display: flex; gap: 8px;">
+                    <button id="guestbook-btn-import" class="btn-retro" style="flex: 1; font-size: 10px;">Импортировать из настроек</button>
+                    <button id="guestbook-btn-random" class="btn-retro" style="width: 70px; font-size: 10px;">Рандом</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Поле сообщения -->
+              <div class="info-block block-blue" style="margin-top: 12px;">
+                <h3 class="subsection-title">Ваше сообщение</h3>
+                <div class="block-content">
+                  <textarea id="guestbook-msg-input" placeholder="Дорогой дневник..." maxlength="250" rows="3" 
+                    style="width: 100%; resize: none; padding: 4px; font-family: '8bitoperator', monospace; font-size: 11px; background-color: #0c0c0c; border: 1.5px inset #222; color: #fff; outline: none;"></textarea>
+                </div>
+              </div>
+
+              <!-- Согласие публичности -->
+              <div style="margin-top: 14px;">
+                <label class="settings-checkbox-container" style="align-items: flex-start;">
+                  <input type="checkbox" id="guestbook-agree-checkbox" class="retro-checkbox">
+                  <span style="font-size: 10px; line-height: 1.3;">Вы принимаете тот факт, что ваш комментарий могут увидеть другие люди?</span>
+                </label>
+              </div>
+
+              <!-- Кнопка отправки -->
+              <div style="margin-top: 16px; text-align: center;">
+                <button id="guestbook-btn-submit" class="btn-submit-guestbook" disabled>ОТПРАВИТЬ!</button>
+              </div>
+            </div>
+
+            <!-- Раздел 2: Просмотр списка сообщений (скрыт по умолчанию) -->
+            <div id="guestbook-read-view" style="display: none;">
+              <div class="guestbook-title-block">
+                <h2 class="guestbook-main-title">Записи гостей</h2>
+                <div class="guestbook-sub-title">Что думают о системе другие путешественники</div>
+              </div>
+
+              <div id="guestbook-messages-container" class="guestbook-list-container">
+                <div id="guestbook-loader" class="guestbook-loader-text">Получение данных с сервера...</div>
+                <div id="guestbook-messages-list" style="display: none; flex-direction: column; gap: 10px;">
+                  <!-- Сообщения будут рендериться динамически из JS -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= ОКНО: CMD ================= -->
+        <div class="window window-large" id="win-cmd" style="top: 25%; left: 20%; display: none;">
+          <div class="window-header">
+            <div class="window-title-container">
+              <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                <rect x="1" y="1" width="14" height="14" fill="#000000" />
+                <rect x="2" y="2" width="12" height="12" fill="#111111" stroke="#00ff00" stroke-width="1" />
+                <path d="M4,4 L7,6 L4,8" stroke="#00ff00" stroke-width="1" fill="none" />
+              </svg>
+              <span class="window-title">C:\Windows\System32\cmd.exe</span>
+            </div>
+            <div class="window-controls">
+              <button class="win-btn btn-minimize" onclick="minimizeWindow('win-cmd')">_</button>
+              <button class="win-btn btn-close" onclick="closeWindow('win-cmd')">X</button>
+            </div>
+          </div>
+          <div class="window-body cmd-window-body">
+            <div class="cmd-terminal" id="cmd-terminal-output">
+              <div>ShinshilaSoft 2069 [Version 10.07.26]</div>
+              <div>(C) НонКопирайт 2022-2026 Shinshila Corp.</div>
+              <br>
+              <div>Введите "help" для получения списка доступных команд.</div>
+              <br>
+            </div>
+            <div class="cmd-input-line">
+              <span class="cmd-prompt">C:\></span>
+              <input type="text" id="cmd-input" autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ОКНО: БЛОКНОТ ================= -->
+        <div class="window" id="win-notepad" style="top: 30%; left: 30%; display: none;">
+          <div class="window-header">
+            <div class="window-title-container">
+              <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
+                <rect x="1" y="2" width="13" height="12" fill="#ffffff" />
+                <line x1="4" y1="4" x2="11" y2="4" stroke="#0000ff" stroke-width="1.5" />
+                <line x1="4" y1="7" x2="12" y2="7" stroke="#000000" stroke-width="1.5" />
+                <line x1="4" y1="10" x2="9" y2="10" stroke="#000000" stroke-width="1.5" />
+              </svg>
+              <span class="window-title">Безымянный - Блокнот</span>
+            </div>
+            <div class="window-controls">
+              <button class="win-btn btn-minimize" onclick="minimizeWindow('win-notepad')">_</button>
+              <button class="win-btn btn-close" onclick="closeWindow('win-notepad')">X</button>
+            </div>
+          </div>
+          <div class="window-body notepad-window-body">
+            <textarea id="notepad-textarea" placeholder="Напишите здесь свои мысли..."></textarea>
+            <div class="notepad-footer">
+              <button class="btn-retro" id="btn-save-notepad">Сохранить</button>
+              <span id="notepad-status-msg" style="font-size: 8px; color: #888; margin-left: 8px;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ОКНО: НАСТРОЙКИ ================= -->
+        <div class="window" id="win-settings" style="top: 22%; left: 22%; display: none;">
+          <div class="window-header">
+            <div class="window-title-container">
+              <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+                <rect x="4" y="4" width="8" height="8" fill="#fff" />
+              </svg>
+              <span class="window-title">Панель управления</span>
+            </div>
+            <div class="window-controls">
+              <button class="win-btn btn-minimize" onclick="minimizeWindow('win-settings')">_</button>
+              <button class="win-btn btn-close" onclick="closeWindow('win-settings')">X</button>
+            </div>
+          </div>
+          <div class="window-body">
+            <h2 class="section-title">Настройки системы</h2>
+
+            <!-- Блок: Ввод Никнейма -->
+            <div class="info-block block-purple"
+              style="border-left: 4px solid #800080; background-color: rgba(128, 0, 128, 0.08);">
+              <h3 class="subsection-title">Как тебя зовут?</h3>
+              <div class="block-content">
+                <input type="text" id="setting-nickname" placeholder="Путник" autocomplete="off" maxlength="15"
+                  style="width: 100%; padding: 4px; font-family: '8bitoperator', monospace; font-size: 11px; background-color: #0c0c0c; border: 1.5px inset #222; color: #fff; outline: none;">
+              </div>
+            </div>
+
+            <div class="info-block block-blue">
+              <h3 class="subsection-title">Внешний вид и эффекты</h3>
+              <div class="block-content" style="display: flex; flex-direction: column; gap: 8px;">
+                <label class="settings-checkbox-container">
+                  <input type="checkbox" id="setting-disable-glitch" class="retro-checkbox">
+                  <span>Отключить глитч-эффекты</span>
+                </label>
+                <label class="settings-checkbox-container">
+                  <input type="checkbox" id="setting-disable-boot" class="retro-checkbox">
+                  <span>Отключить симуляцию запуска</span>
+                </label>
+                <label class="settings-checkbox-container">
+                  <input type="checkbox" id="setting-stretch-screen" class="retro-checkbox">
+                  <span>Растянуть на весь экран</span>
+                </label>
+                <label class="settings-checkbox-container">
+                  <input type="checkbox" id="setting-remove-outer-bg" class="retro-checkbox">
+                  <span>Убрать фон</span>
+                </label>
+                <label class="settings-checkbox-container">
+                  <input type="checkbox" id="setting-remove-wallpaper" class="retro-checkbox">
+                  <span>Убрать обои (черный фон)</span>
+                </label>
+                <label class="settings-checkbox-container">
+                  <input type="checkbox" id="setting-disable-sounds" class="retro-checkbox">
+                  <span>Выключить звуки запуска и эмбиента</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="info-block block-yellow-shimmer">
+              <h3 class="subsection-title">Смена обоев рабочего стола</h3>
+              <div class="block-content"
+                style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0;">
+                <button class="btn-retro" id="setting-wallpaper-prev">◀</button>
+                <span id="setting-wallpaper-name" style="font-weight: bold; font-size: 11px;">Стандартные</span>
+                <button class="btn-retro" id="setting-wallpaper-next">▶</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Иконка Звука (в левом нижнем углу рабочего стола) -->
+        <button class="desktop-icon" id="icon-mute-sounds"
+          style="position: absolute; bottom: 80px; left: 16px; z-index: 5;" onclick="toggleMuteSounds()">
+          <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+            <!-- Speaker base -->
+            <rect x="2" y="6" width="4" height="4" fill="#00ff00" />
+            <path d="M6,6 L10,2 L10,14 L6,10 Z" fill="#00ff00" />
+            <!-- Sound waves (unmuted) -->
+            <path class="sound-wave" d="M12,5 L12,11 M14,3 L14,13" stroke="#00ff00" stroke-width="1.5" fill="none" />
+            <!-- Mute cross line (muted) -->
+            <line class="sound-mute-line" x1="1" y1="1" x2="15" y2="15" stroke="#ff3333" stroke-width="2" style="display: none;" />
+          </svg>
+          <span class="icon-label" id="mute-icon-label">Звук: Вкл</span>
+        </button>
+
+        <!-- Иконка Гостевуха (по центру внизу рабочего стола) -->
+        <button class="desktop-icon" id="icon-guestbook"
+          style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 5;" onclick="openWindow('win-guestbook')">
+          <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+            <!-- Книга/дневник с ручкой в пиксель-арт стиле -->
+            <rect x="2" y="1" width="10" height="14" rx="1" fill="#c0c0c0" stroke="#000" stroke-width="1" />
+            <rect x="3" y="2" width="8" height="12" fill="#ffffff" />
+            <!-- Спиральный переплет слева -->
+            <rect x="1" y="3" width="2" height="1" fill="#808080" />
+            <rect x="1" y="6" width="2" height="1" fill="#808080" />
+            <rect x="1" y="9" width="2" height="1" fill="#808080" />
+            <rect x="1" y="12" width="2" height="1" fill="#808080" />
+            <!-- Полоски текста -->
+            <line x1="5" y1="4" x2="9" y2="4" stroke="#000" stroke-width="1" />
+            <line x1="5" y1="7" x2="9" y2="7" stroke="#000" stroke-width="1" />
+            <line x1="5" y1="10" x2="8" y2="10" stroke="#000" stroke-width="1" />
+            <!-- Карандаш/ручка лежащая наискосок -->
+            <path d="M11,11 L14,8 L15,9 L12,12 Z" fill="#0000ff" />
+            <polygon points="11,11 10,12 11,12" fill="#ffcc00" />
+            <rect x="10" y="12" width="1" height="1" fill="#000" />
+          </svg>
+          <span class="icon-label">Гостевуха</span>
+        </button>
+
+        <!-- Иконка Настройки (теперь строго в корне desktop-container) -->
+        <button class="desktop-icon" id="icon-settings"
+          style="position: absolute; bottom: 80px; right: 16px; z-index: 5;" onclick="openWindow('win-settings')">
+          <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
+            <rect x="7" y="1" width="2" height="14" fill="#00ff00" />
+            <rect x="1" y="7" width="14" height="2" fill="#00ff00" />
+            <rect x="4" y="4" width="8" height="8" fill="#808080" />
+            <rect x="6" y="6" width="4" height="4" fill="#000000" />
+            <rect x="5" y="3" width="2" height="2" fill="#808080" />
+            <rect x="9" y="3" width="2" height="2" fill="#808080" />
+            <rect x="3" y="5" width="2" height="2" fill="#808080" />
+            <rect x="11" y="5" width="2" height="2" fill="#808080" />
+            <rect x="3" y="9" width="2" height="2" fill="#808080" />
+            <rect x="11" y="9" width="2" height="2" fill="#808080" />
+            <rect x="5" y="11" width="2" height="2" fill="#808080" />
+            <rect x="9" y="11" width="2" height="2" fill="#808080" />
+          </svg>
+          <span class="icon-label">Настройки</span>
+        </button>
+
+        <div class="release-info">
+          <div class="release-line">vibecoded by DanShag. Версия от 10 июля 2026 года.</div>
+          <div class="release-line">Все права отпущены и гуляют. Порадуйтесь за них.</div>
+        </div>
+
+        <!-- Панель задач Windows 2000 -->
+        <div id="autoplay-notification" class="retro-notification" style="display: none;" onclick="event.stopPropagation();">
+          <div class="notification-header">
+            <span class="notification-title-container">
+              <svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12" style="fill: #ffffff; margin-right: 4px;">
+                <rect x="1" y="6" width="3" height="4" />
+                <path d="M4,6 L7,3 L7,13 L4,10 Z" />
+                <rect x="10" y="2" width="2" height="7" fill="#ffcc00" />
+                <rect x="10" y="11" width="2" height="2" fill="#ffcc00" />
+              </svg>
+              <span class="notification-title">Аудиосистема</span>
+            </span>
+            <button class="notification-close" onclick="event.stopPropagation(); closeAutoplayNotification();">X</button>
+          </div>
+          <div class="notification-body">
+            Ваш браузер заблокировал автовоспроизведение запуска этой прекрасной системы! :(
+          </div>
+        </div>
+
+        <div class="taskbar">
+          <button class="start-button start-ds-glow" id="start-btn">
+            <svg class="pixel-icon ds-flag-glowing" viewBox="0 0 16 16" width="16" height="16">
+              <!-- DS Pixel Art Logo -->
+              <rect x="1" y="3" width="2" height="10" fill="#00ff00" />
+              <rect x="3" y="3" width="4" height="2" fill="#00ff00" />
+              <rect x="3" y="11" width="4" height="2" fill="#00ff00" />
+              <rect x="7" y="5" width="2" height="6" fill="#00ff00" />
+              <rect x="10" y="3" width="5" height="2" fill="#00ff00" />
+              <rect x="10" y="5" width="2" height="2" fill="#00ff00" />
+              <rect x="10" y="7" width="5" height="2" fill="#00ff00" />
+              <rect x="13" y="9" width="2" height="2" fill="#00ff00" />
+              <rect x="10" y="11" width="5" height="2" fill="#00ff00" />
+            </svg>
+            <span class="start-text"><-</span>
+          </button>
+
+          <div class="taskbar-divider"></div>
+
+          <!-- Вкладки открытых окон -->
+          <div class="taskbar-items" id="taskbar-items-container">
+            <!-- Сюда динамически добавляются кнопки запущенных окон -->
+          </div>
+
+          <div class="taskbar-system-tray">
+            <div class="tray-inner" style="display: flex; align-items: center; gap: 4px;">
+              <span id="tray-volume-warning" style="display: none; cursor: pointer; margin-right: 4px; align-items: center;" onclick="event.stopPropagation(); showAutoplayNotification();">
+                <svg class="pixel-icon" viewBox="0 0 16 16" width="14" height="14" style="fill: #ff3333;">
+                  <rect x="1" y="6" width="3" height="4" />
+                  <path d="M4,6 L7,3 L7,13 L4,10 Z" />
+                  <rect x="10" y="2" width="2" height="7" fill="#ffcc00" />
+                  <rect x="10" y="11" width="2" height="2" fill="#ffcc00" />
+                </svg>
+              </span>
+              <span id="system-clock">00:00</span>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- desktop-container -->
+    </div> <!-- monitor-bezel -->
+  </div> <!-- monitor-wrapper -->
+
+  <script src="script.js"></script>
+</body>
+
+</html>

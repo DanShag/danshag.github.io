@@ -8,7 +8,7 @@ let notificationTimeout = null;
 let mouseClickAudio = null;
 
 // Настройки подключения к Supabase (Инструкция по заполнению в database_setup_guide.md)
-const SUPABASE_URL = "https://epvcpkylgqgyevirubhn.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://epvcpkylgqgyevirubhn.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_DkBPR_bs6U7hWfxObPQ95Q_msbwwV-o";
 let supabaseClient = null;
 
@@ -671,11 +671,19 @@ function initGuestbook() {
   const submitBtn = document.getElementById('guestbook-btn-submit');
   const nameInput = document.getElementById('guestbook-name-input');
   const msgInput = document.getElementById('guestbook-msg-input');
+  const refreshBtn = document.getElementById('guestbook-btn-refresh');
 
   // Переключение вкладок
   if (toggleBtn) {
     toggleBtn.onclick = () => {
       toggleGuestbookView();
+    };
+  }
+
+  // Обновить список сообщений
+  if (refreshBtn) {
+    refreshBtn.onclick = () => {
+      loadGuestbookMessages();
     };
   }
 
@@ -718,18 +726,21 @@ function toggleGuestbookView() {
   const writeView = document.getElementById('guestbook-write-view');
   const readView = document.getElementById('guestbook-read-view');
   const toggleBtn = document.getElementById('guestbook-btn-toggle-view');
+  const refreshBtn = document.getElementById('guestbook-btn-refresh');
 
   if (guestbookCurrentView === 'write') {
     guestbookCurrentView = 'read';
     if (writeView) writeView.style.display = 'none';
     if (readView) readView.style.display = 'block';
     if (toggleBtn) toggleBtn.textContent = 'Написать';
+    if (refreshBtn) refreshBtn.style.display = 'inline-block';
     loadGuestbookMessages();
   } else {
     guestbookCurrentView = 'write';
     if (writeView) writeView.style.display = 'block';
     if (readView) readView.style.display = 'none';
     if (toggleBtn) toggleBtn.textContent = 'Сообщения пользователей';
+    if (refreshBtn) refreshBtn.style.display = 'none';
   }
 }
 

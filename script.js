@@ -1,4 +1,4 @@
-// Конфигурация звуков и настроек системы
+﻿
 let startupAudio = null;
 let ambientAudio = null;
 let audioUnlocked = false;
@@ -6,11 +6,13 @@ let startupAudioPlayed = false;
 let autoplayBlocked = false;
 let notificationTimeout = null;
 let mouseClickAudio = null;
+let lastKeyboardSoundTime = 0;
 
-// Настройки подключения к Supabase (Инструкция по заполнению в database_setup_guide.md)
+
 const SUPABASE_URL = "https://epvcpkylgqgyevirubhn.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_DkBPR_bs6U7hWfxObPQ95Q_msbwwV-o";
 let supabaseClient = null;
+let guestbookCooldownInterval = null;
 
 const systemSettings = {
   disableGlitch: false,
@@ -20,7 +22,8 @@ const systemSettings = {
   removeWallpaper: false,
   wallpaperIndex: 0,
   nickname: "",
-  disableSounds: false
+  disableSounds: false,
+  desktopScale: 100
 };
 
 const wallpapersList = [
@@ -32,18 +35,18 @@ const wallpapersList = [
 ];
 
 
-// Проверка критического состояния системы при удалении C:
+
 const systemIsDeleted = (document.cookie.split('; ').find(row => row.startsWith('danshag_sys_deleted='))?.split('=')[1] === 'true') || (localStorage.getItem('danshag_sys_deleted') === 'true');
 if (systemIsDeleted) {
   document.addEventListener('DOMContentLoaded', () => {
-    // Сразу гасим все фоны при загрузке страницы восстановления
+
     document.documentElement.classList.add('system-dead');
     document.body.classList.add('system-dead');
     showRecoveryPrompt();
   });
 }
 
-// ================= СИСТЕМНЫЕ НАСТРОЙКИ И ЗВУКИ =================
+
 
 function loadSystemSettings() {
   const cookieVal = getCookie('danshag_settings');
@@ -74,7 +77,18 @@ function applySystemSettings() {
   const wpName = document.getElementById('setting-wallpaper-name');
   const snd = document.getElementById('setting-disable-sounds');
 
-  // 1. Глитч-эффекты на обоях
+
+  const scale = systemSettings.desktopScale || 100;
+  const baseZoom = systemSettings.stretchScreen ? 1.0 : 1.2;
+  const zoomFactor = baseZoom * (scale / 100);
+  document.documentElement.style.setProperty('--desktop-zoom', zoomFactor);
+
+  const scaleInput = document.getElementById('setting-scale-input');
+  if (scaleInput) {
+    scaleInput.value = scale;
+  }
+
+
   if (wallpaper) {
     if (systemSettings.disableGlitch) {
       wallpaper.style.animation = 'none';
@@ -83,11 +97,11 @@ function applySystemSettings() {
     }
   }
 
-  // 2. Растягивание экрана
+
   if (bezel) {
     if (systemSettings.stretchScreen) {
       bezel.classList.add('stretched');
-      // Если включено растягивание, функция "Убрать фон" недоступна
+
       if (removeOuterBgCheckbox) {
         removeOuterBgCheckbox.disabled = true;
         removeOuterBgCheckbox.checked = false;
@@ -107,14 +121,14 @@ function applySystemSettings() {
     }
   }
 
-  // 3. Отключение внешнего фона
+
   if (!systemSettings.stretchScreen && systemSettings.removeOuterBg) {
     document.body.classList.add('no-outer-bg');
   } else {
     document.body.classList.remove('no-outer-bg');
   }
 
-  // 4. Отключение/смена обоев
+
   if (wallpaper) {
     if (systemSettings.removeWallpaper) {
       wallpaper.classList.add('no-wallpaper');
@@ -126,7 +140,7 @@ function applySystemSettings() {
       wallpaper.style.backgroundImage = `url('${activeWp.path}')`;
     }
 
-    // ПРИМЕНЕНИЕ НИКНЕЙМА:
+
     const nickInput = document.getElementById('setting-nickname');
     if (nickInput) {
       nickInput.value = systemSettings.nickname || "";
@@ -137,7 +151,7 @@ function applySystemSettings() {
     }
   }
 
-  // 5. Включение/выключение звуков
+
   if (systemSettings.disableSounds) {
     if (startupAudio) startupAudio.pause();
     if (ambientAudio) ambientAudio.pause();
@@ -151,7 +165,7 @@ function applySystemSettings() {
     }
   }
 
-  // Обновляем визуальное состояние иконки звука на рабочем столе
+
   const muteIconBtn = document.getElementById('icon-mute-sounds');
   const muteLine = document.querySelector('#icon-mute-sounds .sound-mute-line');
   const soundWaves = document.querySelectorAll('#icon-mute-sounds .sound-wave');
@@ -169,7 +183,7 @@ function applySystemSettings() {
     if (muteIconBtn) muteIconBtn.classList.remove('muted');
   }
 
-  // Обновление интерфейса панели настроек
+
   if (gl) gl.checked = systemSettings.disableGlitch;
   if (bo) bo.checked = systemSettings.disableBoot;
   if (st) st.checked = systemSettings.stretchScreen;
@@ -185,7 +199,7 @@ function toggleMuteSounds() {
   applySystemSettings();
 }
 
-// Звуковое сопровождение
+
 function playStartupSound() {
   if (systemSettings.disableSounds) return;
   if (startupAudioPlayed) return;
@@ -205,7 +219,7 @@ function playStartupSound() {
 }
 
 function playAmbientSound() {
-  // Если звук запуска всё ещё играет, ставим его на паузу
+
   if (startupAudio) {
     startupAudio.pause();
   }
@@ -228,11 +242,18 @@ function playMouseClickSound() {
 
 function playKeyboardClickSound() {
   if (systemSettings.disableSounds || !audioUnlocked) return;
+
+  const now = Date.now();
+  if (now - lastKeyboardSoundTime < 65) {
+    return;
+  }
+  lastKeyboardSoundTime = now;
+
   const sound = new Audio('assets/clickkeyboard.mp3');
   sound.play().catch(e => console.log("Не удалось воспроизвести звук клавиатуры:", e));
 }
 
-// Симуляция запуска системы (BIOS)
+
 function startSystemBoot() {
   const bootScreen = document.getElementById('boot-screen');
 
@@ -254,11 +275,12 @@ function startSystemBoot() {
   logContainer.innerHTML = '';
 
   const biosLines = [
-    "BIOS Version 1.04.26 - Shinshila Soft (C) 2026",
-    "CPU: AMD Ryzen 7 1700X Eight-Core Processor @ 3.85 GHz",
-    "Memory Test: 32768 MB OK",
-    "Detecting Primary Master ... Toshiba 500GB HDD [S.M.A.R.T. OK]",
-    "Detecting Secondary Master ... XPG SPECTRIX S40G NVMe SSD",
+    "BIOS Version F69",
+    "Shinshila Soft (C) 2026. All rights have been de-sealed.",
+    "CPU: iNCEL Penpepum 16-bit Processor @ 1.8 GHz",
+    "Memory Test: 16 MB OK",
+    "Detecting Primary Master ... Soshiba 500MB HDD [S.M.A.R.T. ERROR]",
+    "Detecting Secondary Master ... Not found... what? Are you poor?",
     "Keyboard ..... Detected",
     "Mouse ........ Detected",
     "Loading kernel modules ...",
@@ -277,10 +299,10 @@ function startSystemBoot() {
       p.textContent = biosLines[lineIndex];
       logContainer.appendChild(p);
       lineIndex++;
-      const delay = Math.random() * 300 + 100; // Слегка ускорили вывод для динамичности
+      const delay = Math.random() * 300 + 100;
       setTimeout(printNextLine, delay);
     } else {
-      // Переход на загрузочный экран OS (XP стиль)
+
       const osLoading = document.getElementById('os-loading');
       if (osLoading) {
         const welcomeText = document.getElementById('xp-welcome-text');
@@ -311,7 +333,7 @@ function fadeOutBootScreen() {
       bootScreen.style.display = 'none';
       bootScreen.style.opacity = '1';
       if (osLoading) {
-        osLoading.style.display = 'none'; // Сбрасываем загрузочный экран OS, чтобы он не числился активным
+        osLoading.style.display = 'none';
       }
       onSystemReady();
     }, 800);
@@ -331,7 +353,7 @@ function handleSkipBoot() {
   onSystemReady();
 }
 
-// Снятие блокировок аудио по первому клику или клавише пользователя
+
 function unlockAudio() {
   if (audioUnlocked) return;
   audioUnlocked = true;
@@ -342,8 +364,8 @@ function unlockAudio() {
   const bootScreenActive = bootScreen && bootScreen.style.display !== 'none';
 
   if (bootScreenActive) {
-    // Если запуск идет и звук НЕ играет (был заблокирован) — играем его.
-    // Если звук уже играет (успешный автозапуск) — НИЧЕГО не делаем, не сбиваем его на эмбиент!
+
+
     if (!startupAudioPlayed) {
       playStartupSound();
     }
@@ -351,7 +373,7 @@ function unlockAudio() {
     playAmbientSound();
   }
 
-  // Скрываем предупреждение при успешном клике/разблокировке звука
+
   autoplayBlocked = false;
   const trayIcon = document.getElementById('tray-volume-warning');
   if (trayIcon) {
@@ -360,7 +382,7 @@ function unlockAudio() {
   closeAutoplayNotification();
 }
 
-// Уведомление об автозапуске аудио
+
 function onSystemReady() {
   if (autoplayBlocked) {
     const trayIcon = document.getElementById('tray-volume-warning');
@@ -381,7 +403,7 @@ function showAutoplayNotification() {
 
   notif.style.display = 'block';
 
-  // Закрытие уведомления через 5 секунд
+
   notificationTimeout = setTimeout(() => {
     closeAutoplayNotification();
   }, 5000);
@@ -399,10 +421,10 @@ function closeAutoplayNotification() {
 }
 
 
-// Коэффициент масштабирования (должен совпадать с --desktop-zoom в style.css)
+
 const DESKTOP_ZOOM = 1.2;
 
-// ================= ФУНКЦИИ COOKIE ДЛЯ VISIT COUNT =================
+
 
 function getCookie(name) {
   try {
@@ -442,7 +464,7 @@ function setCookie(name, value, days) {
   }
 }
 
-// ================= ЛОГИКА ИНТРО =================
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -456,43 +478,55 @@ document.addEventListener('DOMContentLoaded', () => {
   visitCount++;
   setCookie('danshag_visits', visitCount, 365);
 
-  // Инициализация блокнота
+
   loadNotepadContent();
   document.getElementById('btn-save-notepad').addEventListener('click', saveNotepadContent);
   document.getElementById('notepad-textarea').addEventListener('input', () => {
-    // Автосохранение при вводе
+
     setCookie('danshag_notepad', encodeURIComponent(document.getElementById('notepad-textarea').value), 30);
   });
 
-  // Инициализация плеера и командной строки
+
   initAudioPlayer();
   initCommandLine();
 
-  // visitCount = 1; // Раскомментировать для отладки
+
 
   if (visitCount === 1) {
-    // 1-й визит: плавный рассказ и наступление темноты
-    setTimeout(() => {
+
+    const t1 = setTimeout(() => {
       introText.textContent = "Когда станет темно";
       introScreen.classList.add('darkness-stage-1');
     }, 2000);
 
-    setTimeout(() => {
+    const t2 = setTimeout(() => {
       introText.textContent = "Затем темней";
       introScreen.classList.add('darkness-stage-2');
     }, 3000);
 
-    setTimeout(() => {
+    const t3 = setTimeout(() => {
       introText.textContent = "Ещё темнее.";
       introScreen.classList.add('darkness-stage-3');
     }, 4000);
 
-    setTimeout(() => {
+    const t4 = setTimeout(() => {
       endIntro();
     }, 5000);
 
+    const skipIntroBtn = document.getElementById('skip-intro-btn');
+    if (skipIntroBtn) {
+      skipIntroBtn.style.display = 'block';
+      skipIntroBtn.onclick = () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+        clearTimeout(t4);
+        endIntro(true);
+      };
+    }
+
   } else if (visitCount === 2) {
-    // 2-й визит: сразу темно
+
     introScreen.classList.add('darkness-stage-3');
     introText.textContent = "Здесь слишком темно.";
     setTimeout(() => {
@@ -500,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
   } else if (visitCount === 3) {
-    // 3-й визит: в темноте страшно
+
     introScreen.classList.add('darkness-stage-3');
     introText.textContent = "В темноте страшно, не так ли?";
     setTimeout(() => {
@@ -508,24 +542,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
   } else if (visitCount === 4) {
-    // 4-й визит: быстрый проброс "Тот эксперимент..."
+
     introScreen.classList.add('darkness-stage-3');
     introText.textContent = "Тот эксперимент не был провальным.";
     setTimeout(() => {
-      endIntro(true); // быстрый выход без долгого фейда
+      endIntro(true);
     }, 150);
 
   } else {
-    // 5-й и последующие визиты: сразу на сайт
+
     introScreen.style.display = 'none';
     introScreen.classList.remove('intro-active');
-    // ДОБАВИТЬ СЮДА:
+
     startSystemBoot();
   }
 
   function endIntro(fast = false) {
-    // Начинаем запуск системы (BIOS) сразу, чтобы под фейдящимся интро-экраном
-    // уже был темный экран загрузки, а не цветной рабочий стол
+
+
     startSystemBoot();
 
     if (fast) {
@@ -547,7 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Отслеживание ввода никнейма в реальном времени
+
   const nickInput = document.getElementById('setting-nickname');
   if (nickInput) {
     nickInput.addEventListener('input', (e) => {
@@ -557,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Слушатели клика/клавиатуры для разблокировки звука
+
   document.addEventListener('click', unlockAudio);
   document.addEventListener('keydown', unlockAudio);
 
@@ -566,12 +600,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', (e) => {
-    // Предотвращаем повтор звуков при зажатии клавиш, кроме клавиши Backspace (чтобы озвучивать каждый удаленный символ)
+
     if (e.repeat && e.key !== 'Backspace') return;
+
+
+    if (e.key === 'Backspace') {
+      const active = document.activeElement;
+      const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+      if (isInput && active.value.length === 0) {
+        return;
+      }
+      if (!isInput && e.repeat) {
+        return;
+      }
+    }
+
     playKeyboardClickSound();
   });
 
-  // 3. Обработчики элементов формы настроек
+
   const glInput = document.getElementById('setting-disable-glitch');
   const boInput = document.getElementById('setting-disable-boot');
   const stInput = document.getElementById('setting-stretch-screen');
@@ -583,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (boInput) boInput.onchange = (e) => { systemSettings.disableBoot = e.target.checked; saveSystemSettings(); applySystemSettings(); };
   if (stInput) stInput.onchange = (e) => {
     systemSettings.stretchScreen = e.target.checked;
-    if (e.target.checked) systemSettings.removeOuterBg = false; // Отключаем Убрать фон при растянутом режиме
+    if (e.target.checked) systemSettings.removeOuterBg = false;
     saveSystemSettings();
     applySystemSettings();
   };
@@ -591,7 +638,54 @@ document.addEventListener('DOMContentLoaded', () => {
   if (waInput) waInput.onchange = (e) => { systemSettings.removeWallpaper = e.target.checked; saveSystemSettings(); applySystemSettings(); };
   if (sndInput) sndInput.onchange = (e) => { systemSettings.disableSounds = e.target.checked; saveSystemSettings(); applySystemSettings(); };
 
-  // 4. Кнопки смены обоев
+
+  const scaleDown = document.getElementById('setting-scale-down');
+  const scaleUp = document.getElementById('setting-scale-up');
+  const scaleInput = document.getElementById('setting-scale-input');
+  const scaleHint = document.getElementById('scale-status-hint');
+
+  function updateDesktopScaleSetting(newVal) {
+    let val = parseInt(newVal, 10);
+    if (isNaN(val)) {
+      if (scaleHint) scaleHint.style.display = 'block';
+      return;
+    }
+    if (val < 70) val = 70;
+    if (val > 150) val = 150;
+
+    if (scaleHint) scaleHint.style.display = 'none';
+    systemSettings.desktopScale = val;
+    saveSystemSettings();
+    applySystemSettings();
+  }
+
+  if (scaleDown) {
+    scaleDown.onclick = () => {
+      const cur = systemSettings.desktopScale || 100;
+      updateDesktopScaleSetting(cur - 5);
+    };
+  }
+
+  if (scaleUp) {
+    scaleUp.onclick = () => {
+      const cur = systemSettings.desktopScale || 100;
+      updateDesktopScaleSetting(cur + 5);
+    };
+  }
+
+  if (scaleInput) {
+    scaleInput.onchange = (e) => {
+      updateDesktopScaleSetting(e.target.value);
+    };
+    scaleInput.onkeydown = (e) => {
+      if (e.key === 'Enter') {
+        updateDesktopScaleSetting(scaleInput.value);
+        scaleInput.blur();
+      }
+    };
+  }
+
+
   const wpPrev = document.getElementById('setting-wallpaper-prev');
   const wpNext = document.getElementById('setting-wallpaper-next');
 
@@ -608,11 +702,11 @@ document.addEventListener('DOMContentLoaded', () => {
     applySystemSettings();
   };
 
-  // 5. Кнопка "Пропустить" для загрузки
+
   const skipBtn = document.getElementById('skip-boot-btn');
   if (skipBtn) skipBtn.onclick = handleSkipBoot;
 
-  // Инициализация функционала часов и перетаскивания окон
+
   updateClock();
   setInterval(updateClock, 1000);
 
@@ -622,16 +716,16 @@ document.addEventListener('DOMContentLoaded', () => {
     win.addEventListener('mousedown', () => focusWindow(win.id));
   });
 
-  // Запуск первой отрисовки таскбара
+
   renderTaskbar();
 
-  // Логика меню Пуск
+
   setupStartMenu();
 
-  // Инициализация «Гостевухи»
+
   initGuestbook();
 
-  // Динамически загружаем Supabase client library, если прописаны URL и KEY
+
   if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -649,7 +743,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ================= СИСТЕМНЫЕ ЧАСЫ =================
+
 
 function updateClock() {
   const clockEl = document.getElementById('system-clock');
@@ -660,8 +754,8 @@ function updateClock() {
   clockEl.textContent = `${hours}:${minutes}`;
 }
 
-// ================= ЛОГИКА ГОСТЕВОЙ КНИГИ =================
-let guestbookCurrentView = 'write'; // 'write' или 'read'
+
+let guestbookCurrentView = 'write';
 
 function initGuestbook() {
   const toggleBtn = document.getElementById('guestbook-btn-toggle-view');
@@ -673,21 +767,21 @@ function initGuestbook() {
   const msgInput = document.getElementById('guestbook-msg-input');
   const refreshBtn = document.getElementById('guestbook-btn-refresh');
 
-  // Переключение вкладок
+
   if (toggleBtn) {
     toggleBtn.onclick = () => {
       toggleGuestbookView();
     };
   }
 
-  // Обновить список сообщений
+
   if (refreshBtn) {
     refreshBtn.onclick = () => {
       loadGuestbookMessages();
     };
   }
 
-  // Импорт имени
+
   if (importBtn) {
     importBtn.onclick = () => {
       if (nameInput) {
@@ -696,7 +790,7 @@ function initGuestbook() {
     };
   }
 
-  // Рандомный ник
+
   if (randomBtn) {
     randomBtn.onclick = () => {
       if (nameInput) {
@@ -705,16 +799,17 @@ function initGuestbook() {
     };
   }
 
-  // Управление активностью кнопки отправки
+
   if (agreeCheck) {
     agreeCheck.onchange = () => {
       if (submitBtn) {
-        submitBtn.disabled = !agreeCheck.checked;
+        const isCooldownActive = document.getElementById('guestbook-limit-warning')?.style.display === 'block';
+        submitBtn.disabled = !agreeCheck.checked || isCooldownActive;
       }
     };
   }
 
-  // Отправка сообщения
+
   if (submitBtn) {
     submitBtn.onclick = () => {
       submitGuestbookMessage();
@@ -741,16 +836,175 @@ function toggleGuestbookView() {
     if (readView) readView.style.display = 'none';
     if (toggleBtn) toggleBtn.textContent = 'Сообщения пользователей';
     if (refreshBtn) refreshBtn.style.display = 'none';
+    proactiveLimitCheck();
   }
 }
 
 function generateRandomNickname() {
-  const prefixes = ["Шиншилла", "Анонимус", "Юзер", "Странник", "Путник", "Хакер", "Ретроман", "Гость", "DanShagFan"];
-  const suffixes = ["_99", "_2000", "_xp", "_win", "_x", "_dx", "_core", "_nt", "_os"];
+  const prefixes = ["Шиншилла", "Анонимус", "Онанист", "Меченный", "Путник", "Хакер", "Некрофил", "Гость", "ОбладательБольшогоЧлена", "Цундере", "Ретродере"];
+  const suffixes = ["_xyz", "_2000", "_xp", "_win", "_x", "_dx", "_core", "_nt", "_os"];
   const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
   const randomSuffix = suffixes[Math.floor(Math.random() * suffixes.length)];
   const randomNumber = Math.floor(Math.random() * 900) + 100;
   return `${randomPrefix}${randomSuffix}${randomNumber}`;
+}
+
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(16);
+}
+
+
+async function getClientIp() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    return data.ip || '127.0.0.1';
+  } catch (e) {
+    return '127.0.0.1';
+  }
+}
+
+
+function recordLocalMessageSent() {
+  let list = [];
+  try {
+    const stored = localStorage.getItem('danshag_sent_timestamps');
+    if (stored) list = JSON.parse(stored);
+  } catch (e) { }
+  list.push(Date.now());
+  localStorage.setItem('danshag_sent_timestamps', JSON.stringify(list));
+}
+
+
+async function checkGuestbookRateLimits() {
+  const now = Date.now();
+
+
+  let localTimes = [];
+  try {
+    const stored = localStorage.getItem('danshag_sent_timestamps');
+    if (stored) localTimes = JSON.parse(stored);
+  } catch (e) { }
+
+
+  localTimes = localTimes.filter(t => now - t < 10 * 60 * 1000);
+  localStorage.setItem('danshag_sent_timestamps', JSON.stringify(localTimes));
+
+  if (localTimes.length >= 5) {
+    const oldest = localTimes[0];
+    const waitMs = (oldest + 10 * 60 * 1000) - now;
+    return {
+      allowed: false,
+      message: `Вы отправили 5 сообщений! Лимит по IP.`,
+      waitSeconds: Math.ceil(waitMs / 1000)
+    };
+  }
+
+
+  if (supabaseClient) {
+    try {
+      const ip = await getClientIp();
+      const ipHash = hashString(ip);
+
+
+      const fiveMinsAgo = new Date(now - 5 * 60 * 1000).toISOString();
+      const { data: recentGlobal, error: err1 } = await supabaseClient
+        .from('guestbook_messages')
+        .select('created_at')
+        .gt('created_at', fiveMinsAgo)
+        .order('created_at', { ascending: false });
+
+      if (err1) throw err1;
+
+      if (recentGlobal && recentGlobal.length >= 15) {
+
+        const oldestGlobalMsg = recentGlobal[14];
+        const waitMs = (new Date(oldestGlobalMsg.created_at).getTime() + 5 * 60 * 1000) - now;
+        return {
+          allowed: false,
+          message: `Действует медленный режим, из-за огромного кол-во сообщений!`,
+          waitSeconds: Math.ceil(waitMs / 1000)
+        };
+      }
+
+
+      const tenMinsAgo = new Date(now - 10 * 60 * 1000).toISOString();
+      const { data: recentIp, error: err2 } = await supabaseClient
+        .from('guestbook_messages')
+        .select('created_at')
+        .eq('ip_hash', ipHash)
+        .gt('created_at', tenMinsAgo)
+        .order('created_at', { ascending: false });
+
+      if (err2) throw err2;
+
+      if (recentIp && recentIp.length >= 5) {
+        const oldestIpMsg = recentIp[4];
+        const waitMs = (new Date(oldestIpMsg.created_at).getTime() + 10 * 60 * 1000) - now;
+        return {
+          allowed: false,
+          message: `Этот IP отправил 5 сообщений за 10 минут!`,
+          waitSeconds: Math.ceil(waitMs / 1000)
+        };
+      }
+    } catch (e) {
+      console.warn("Сбой проверки лимитов БД, полагаемся на локальный фильтр:", e);
+    }
+  }
+
+  return { allowed: true };
+}
+
+
+function startGuestbookCooldown(waitSeconds, messageText) {
+  const submitBtn = document.getElementById('guestbook-btn-submit');
+  const warningDiv = document.getElementById('guestbook-limit-warning');
+  if (!submitBtn || !warningDiv) return;
+
+  if (guestbookCooldownInterval) {
+    clearInterval(guestbookCooldownInterval);
+  }
+
+  submitBtn.disabled = true;
+  warningDiv.style.display = 'block';
+
+  let remaining = waitSeconds;
+
+  function updateWarning() {
+    if (remaining <= 0) {
+      clearInterval(guestbookCooldownInterval);
+      warningDiv.style.display = 'none';
+      const agreeCheck = document.getElementById('guestbook-agree-checkbox');
+      if (agreeCheck && agreeCheck.checked) {
+        submitBtn.disabled = false;
+      }
+      return;
+    }
+
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    const timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    warningDiv.textContent = `${messageText} Осталось ждать: ${timeStr}`;
+    remaining--;
+  }
+
+  updateWarning();
+  guestbookCooldownInterval = setInterval(updateWarning, 1000);
+}
+
+
+async function proactiveLimitCheck() {
+  const limitCheck = await checkGuestbookRateLimits();
+  if (!limitCheck.allowed) {
+    startGuestbookCooldown(limitCheck.waitSeconds, limitCheck.message);
+  }
 }
 
 async function submitGuestbookMessage() {
@@ -758,6 +1012,7 @@ async function submitGuestbookMessage() {
   const msgInput = document.getElementById('guestbook-msg-input');
   const agreeCheck = document.getElementById('guestbook-agree-checkbox');
   const submitBtn = document.getElementById('guestbook-btn-submit');
+  const warningDiv = document.getElementById('guestbook-limit-warning');
 
   if (!nameInput || !msgInput) return;
 
@@ -770,7 +1025,20 @@ async function submitGuestbookMessage() {
   }
 
   submitBtn.disabled = true;
+  submitBtn.textContent = "ПРОВЕРКА...";
+
+
+  const limitCheck = await checkGuestbookRateLimits();
+  if (!limitCheck.allowed) {
+    submitBtn.textContent = "ОТПРАВИТЬ!";
+    startGuestbookCooldown(limitCheck.waitSeconds, limitCheck.message);
+    return;
+  }
+
   submitBtn.textContent = "ОТПРАВКА...";
+
+  const ip = await getClientIp();
+  const ipHash = hashString(ip);
 
   const newEntry = {
     name: name,
@@ -780,16 +1048,24 @@ async function submitGuestbookMessage() {
 
   try {
     if (supabaseClient) {
-      // Сохраняем в Supabase
-      const { error } = await supabaseClient
+
+      let { error } = await supabaseClient
         .from('guestbook_messages')
         .insert([
-          { name: name, message: message }
+          { name: name, message: message, ip_hash: ipHash }
         ]);
 
-      if (error) throw error;
+      if (error) {
+        console.warn("Колонка ip_hash еще не создана на бэкенде. Запись без нее...", error);
+        const retry = await supabaseClient
+          .from('guestbook_messages')
+          .insert([
+            { name: name, message: message }
+          ]);
+        if (retry.error) throw retry.error;
+      }
     } else {
-      // Автономный режим LocalStorage
+
       let localMsgs = [];
       try {
         const stored = localStorage.getItem('danshag_local_guestbook');
@@ -801,13 +1077,17 @@ async function submitGuestbookMessage() {
       localStorage.setItem('danshag_local_guestbook', JSON.stringify(localMsgs));
     }
 
-    // Успех! Очищаем форму и переходим к сообщениям
+
+    recordLocalMessageSent();
+
+
     msgInput.value = '';
-    agreeCheck.checked = false;
+    if (agreeCheck) agreeCheck.checked = false;
     submitBtn.disabled = true;
     submitBtn.textContent = "ОТПРАВИТЬ!";
+    if (warningDiv) warningDiv.style.display = 'none';
 
-    // Переключаемся на список сообщений
+
     toggleGuestbookView();
 
   } catch (err) {
@@ -829,7 +1109,7 @@ async function loadGuestbookMessages() {
 
   try {
     if (supabaseClient) {
-      // Запрашиваем из Supabase
+
       const { data, error } = await supabaseClient
         .from('guestbook_messages')
         .select('*')
@@ -838,7 +1118,7 @@ async function loadGuestbookMessages() {
       if (error) throw error;
       messages = data || [];
     } else {
-      // Автономный режим LocalStorage
+
       try {
         const stored = localStorage.getItem('danshag_local_guestbook');
         if (stored) messages = JSON.parse(stored);
@@ -848,14 +1128,14 @@ async function loadGuestbookMessages() {
     }
   } catch (err) {
     console.error("Ошибка получения сообщений:", err);
-    // Делаем фолбэк на локальные сообщения при сетевой ошибке
+
     try {
       const stored = localStorage.getItem('danshag_local_guestbook');
       if (stored) messages = JSON.parse(stored);
     } catch (e) { }
   }
 
-  // Отрисовка
+
   if (list) {
     list.innerHTML = '';
     if (messages.length === 0) {
@@ -865,7 +1145,7 @@ async function loadGuestbookMessages() {
         const entry = document.createElement('div');
         entry.className = 'guestbook-entry';
 
-        // Форматирование даты
+
         let dateStr = 'Давно';
         if (item.created_at) {
           const d = new Date(item.created_at);
@@ -892,7 +1172,7 @@ async function loadGuestbookMessages() {
   }
 }
 
-// Простая функция санитации HTML
+
 function escapeHtml(text) {
   if (!text) return '';
   return text
@@ -903,21 +1183,21 @@ function escapeHtml(text) {
     .replace(/'/g, "&#039;");
 }
 
-// ================= ГЛОБАЛЬНЫЙ ГЛИТЧ (КАЖДЫЕ 10 СЕКУНД) =================
+
 
 setInterval(() => {
-  // ПРОПИСАТЬ ЭТУ СТРОКУ:
+
   if (systemSettings.disableGlitch) return;
 
   document.body.classList.add('glitch-active');
 
-  // Убираем глитч через 300мс
+
   setTimeout(() => {
     document.body.classList.remove('glitch-active');
   }, 300);
 }, 10000);
 
-// ================= УПРАВЛЕНИЕ ОКНАМИ =================
+
 
 let windowZIndex = 100;
 const openWindowsState = {
@@ -934,17 +1214,17 @@ function focusWindow(id) {
   const win = document.getElementById(id);
   if (!win) return;
 
-  // Убираем фокус со всех окон
+
   document.querySelectorAll('.window').forEach(w => {
     w.classList.remove('window-active');
   });
 
-  // Добавляем фокус нужному окну
+
   win.classList.add('window-active');
   windowZIndex++;
   win.style.zIndex = windowZIndex;
 
-  // Обновляем состояние
+
   if (openWindowsState[id]) {
     openWindowsState[id].minimized = false;
   }
@@ -981,16 +1261,16 @@ function minimizeWindow(id) {
   win.style.display = 'none';
   openWindowsState[id].minimized = true;
 
-  // Снимаем фокус
+
   win.classList.remove('window-active');
 
-  // Находим следующее активное окно
+
   const activeWindows = Object.keys(openWindowsState).filter(
     winId => openWindowsState[winId].open && !openWindowsState[winId].minimized
   );
 
   if (activeWindows.length > 0) {
-    // Фокусируемся на последнем открытом окне
+
     focusWindow(activeWindows[activeWindows.length - 1]);
   } else {
     renderTaskbar();
@@ -1002,22 +1282,22 @@ function toggleWindowFromTaskbar(id) {
   if (!state) return;
 
   if (state.minimized) {
-    // Если свернуто — разворачиваем и делаем активным
+
     openWindow(id);
   } else {
-    // Если открыто
+
     const win = document.getElementById(id);
     if (win && win.classList.contains('window-active')) {
-      // И в фокусе — сворачиваем
+
       minimizeWindow(id);
     } else {
-      // Открыто, но не в фокусе — выводим на передний план
+
       focusWindow(id);
     }
   }
 }
 
-// ================= ОТРИСОВКА В КЛАДОК В ТАСКБАРЕ =================
+
 
 function renderTaskbar() {
   const container = document.getElementById('taskbar-items-container');
@@ -1037,7 +1317,7 @@ function renderTaskbar() {
         btn.classList.add('active');
       }
 
-      // Выбор пиксельной иконки для панели задач
+
       let iconSvg = '';
       if (state.icon === 'ds-logo') {
         iconSvg = `<svg class="pixel-icon ds-icon-glowing" viewBox="0 0 16 16" width="12" height="12"><path d="M1,2 H7 V4 H9 V2 H15 V8 H13 V10 H15 V14 H9 V12 H7 V14 H1 V8 H3 V6 H1 Z" fill="none" stroke="#00ff00" stroke-width="1.2" /><path d="M4,4 H6 V12 H4 Z M10,4 H12 V6 H10 Z M10,8 H12 V12 H10 Z" fill="#00ff00" /></svg>`;
@@ -1062,7 +1342,7 @@ function renderTaskbar() {
   });
 }
 
-// ================= DRAG AND DROP (ПЕРЕТАСКИВАНИЕ ОКОН) =================
+
 
 function makeDraggable(windowEl) {
   const header = windowEl.querySelector('.window-header');
@@ -1076,7 +1356,7 @@ function makeDraggable(windowEl) {
   function dragMouseDown(e) {
     e = e || window.event;
     e.preventDefault();
-    // Получаем координаты курсора при старте
+
     pos3 = e.clientX;
     pos4 = e.clientY;
     document.onmouseup = closeDragElement;
@@ -1097,7 +1377,7 @@ function makeDraggable(windowEl) {
   function elementDrag(e) {
     e = e || window.event;
     e.preventDefault();
-    // Вычисляем смещение
+
     pos1 = pos3 - e.clientX;
     pos2 = pos4 - e.clientY;
     pos3 = e.clientX;
@@ -1120,12 +1400,15 @@ function makeDraggable(windowEl) {
   function updatePosition() {
     const desktop = document.getElementById('desktop-container');
     const maxLeft = desktop.clientWidth - windowEl.clientWidth;
-    const maxTop = desktop.clientHeight - windowEl.clientHeight - 28; // 28px — высота таскбара
+    const maxTop = desktop.clientHeight - windowEl.clientHeight - 28;
 
-    let newTop = windowEl.offsetTop - pos2;
-    let newLeft = windowEl.offsetLeft - pos1;
+    const baseZoom = systemSettings.stretchScreen ? 1.0 : 1.2;
+    const userScale = (systemSettings.desktopScale || 100) / 100;
+    const zoom = baseZoom * userScale;
+    let newTop = windowEl.offsetTop - (pos2 / zoom);
+    let newLeft = windowEl.offsetLeft - (pos1 / zoom);
 
-    // Ограничение границами экрана
+
     if (newTop < 0) newTop = 0;
     if (newTop > maxTop) newTop = maxTop;
     if (newLeft < 0) newLeft = 0;
@@ -1136,7 +1419,7 @@ function makeDraggable(windowEl) {
   }
 
   function closeDragElement() {
-    // Прекращаем перетаскивание при отпускании кнопки
+
     document.onmouseup = null;
     document.onmousemove = null;
     document.ontouchend = null;
@@ -1144,13 +1427,13 @@ function makeDraggable(windowEl) {
   }
 }
 
-// ================= ДОПОЛНИТЕЛЬНО: МЕНЮ ПУСК =================
+
 
 function setupStartMenu() {
   const startBtn = document.getElementById('start-btn');
   const desktop = document.getElementById('desktop-container');
 
-  // Создаем элемент меню пуск динамически
+
   const startMenu = document.createElement('div');
   startMenu.className = 'window';
   startMenu.id = 'start-menu';
@@ -1186,7 +1469,7 @@ function setupStartMenu() {
             </svg>
             Кто ты?
           </button>
-          
+
           <button class="menu-item-btn" onclick="openWindow('win-projects')">
             <svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12">
               <rect x="2" y="2" width="12" height="12" fill="#fff" />
@@ -1195,7 +1478,7 @@ function setupStartMenu() {
             </svg>
             Проекты
           </button>
-          
+
           <button class="menu-item-btn" onclick="openWindow('win-config')">
             <svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12">
               <rect x="1" y="1" width="12" height="9" fill="#fff" />
@@ -1205,7 +1488,7 @@ function setupStartMenu() {
             </svg>
             Девайсы
           </button>
-          
+
           <button class="menu-item-btn" onclick="openWindow('win-player')">
             <svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12">
               <rect x="3" y="2" width="10" height="2" fill="#00ffcc" />
@@ -1214,7 +1497,7 @@ function setupStartMenu() {
             </svg>
             Плеер
           </button>
-          
+
           <button class="menu-item-btn" onclick="openWindow('win-cmd')">
             <svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12">
               <rect x="1" y="1" width="14" height="14" fill="#000000" />
@@ -1223,7 +1506,7 @@ function setupStartMenu() {
             </svg>
             CMD
           </button>
-          
+
           <button class="menu-item-btn" onclick="openWindow('win-notepad')">
             <svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12">
               <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
@@ -1233,7 +1516,7 @@ function setupStartMenu() {
             </svg>
             Блокнот
           </button>
-          
+
           <div style="height: 1px; background-color: #333; border-bottom: 1px solid #555; margin: 4px 2px;"></div>
           <button class="menu-item-btn" id="btn-shutdown">
             <!-- Иконка выключения -->
@@ -1250,7 +1533,7 @@ function setupStartMenu() {
 
   desktop.appendChild(startMenu);
 
-  // Добавим стили для кнопок меню Пуск в документ
+
   const style = document.createElement('style');
   style.innerHTML = `
     .menu-item-btn {
@@ -1274,7 +1557,7 @@ function setupStartMenu() {
   `;
   document.head.appendChild(style);
 
-  // Поведение кнопки Пуск
+
   startBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (startMenu.style.display === 'none') {
@@ -1286,52 +1569,154 @@ function setupStartMenu() {
     }
   });
 
-  // Закрытие меню пуск по клику на рабочий стол
+
   desktop.addEventListener('click', () => {
     startMenu.style.display = 'none';
     startBtn.classList.remove('active');
   });
 
-  // Логика "Выключения ПК"
+
   const shutdownBtn = document.getElementById('btn-shutdown');
   shutdownBtn.addEventListener('click', () => {
-    startMenu.style.display = 'none';
-    startBtn.classList.remove('active');
+    if (startMenu) startMenu.style.display = 'none';
+    if (startBtn) startBtn.classList.remove('active');
 
-    // Эффект выключения: гасим экран и выводим ретро сообщение
-    const shutdownScreen = document.createElement('div');
-    shutdownScreen.style.cssText = `
+
+    if (startupAudio) startupAudio.pause();
+    if (ambientAudio) ambientAudio.pause();
+    if (window.audioPlayerInstance) {
+      window.audioPlayerInstance.pause();
+    }
+
+
+    const offAudio = new Audio('assets/offsound.mp3');
+    offAudio.play().catch(e => console.log("Не удалось воспроизвести звук выключения:", e));
+
+
+    const bgFadeOverlay = document.createElement('div');
+    bgFadeOverlay.style.cssText = `
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: #000;
-      color: #ff0000;
+      background-color: #000000;
+      z-index: 1; /* Позади монитора (у которого z-index: 2) */
+      opacity: 0;
+      transition: opacity 1s ease;
+      pointer-events: none;
+    `;
+    document.body.appendChild(bgFadeOverlay);
+
+
+    bgFadeOverlay.offsetHeight;
+    bgFadeOverlay.style.opacity = '1';
+
+
+    const shutdownScreen = document.createElement('div');
+    shutdownScreen.style.cssText = `
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: #000000;
+      color: #ffffff;
+      z-index: 100000;
+      padding: 20px;
+      box-sizing: border-box;
+      font-family: 'Courier New', monospace;
+      font-size: 14.4px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 100000;
-      font-size: 20px;
-      text-align: center;
-      font-family: '8bitoperator', monospace;
+      justify-content: flex-start;
+      user-select: none;
     `;
     shutdownScreen.innerHTML = `
-      <div>SYSTEM SHUTDOWN</div>
-      <div style="font-size: 14px; margin-top: 15px; color: #fff;">Теперь питание компьютера можно отключить.</div>
-      <button id="btn-reboot" class="btn-retro" style="margin-top: 30px; padding: 6px 12px; font-size: 12px;">Перезагрузка</button>
+      <div class="bios-brand-header">
+        <svg class="bios-logo-svg" viewBox="0 0 100 60" width="80" height="48">
+          <g fill="#ff3300">
+            <rect x="45" y="5" width="10" height="3" />
+            <rect x="40" y="10" width="20" height="3" />
+            <rect x="35" y="15" width="30" height="3" />
+            <rect x="30" y="20" width="12" height="3" />
+            <rect x="58" y="20" width="12" height="3" />
+            <rect x="25" y="25" width="16" height="3" />
+            <rect x="59" y="25" width="16" height="3" />
+            <rect x="20" y="30" width="20" height="3" />
+            <rect x="60" y="30" width="20" height="3" />
+            <rect x="15" y="35" width="24" height="3" />
+            <rect x="61" y="35" width="24" height="3" />
+            <rect x="10" y="40" width="80" height="3" />
+            <rect x="5" y="45" width="90" height="3" />
+          </g>
+        </svg>
+        <div class="bios-brand-text">
+          <div class="bios-brand-title">Shinshila</div>
+          <div class="bios-brand-subtitle">Megatrends</div>
+        </div>
+      </div>
+      <div id="shutdown-log" style="flex-grow: 1; white-space: pre-line; line-height: 1.4; overflow: hidden;"></div>
     `;
 
-    document.body.appendChild(shutdownScreen);
+    if (desktop) {
+      desktop.appendChild(shutdownScreen);
+    } else {
+      document.body.appendChild(shutdownScreen);
+    }
 
-    document.getElementById('btn-reboot').addEventListener('click', () => {
-      shutdownScreen.remove();
-      // Сбрасываем куки для теста первого визита при перезапуске
-      setCookie('danshag_visits', '0', 365);
-      window.location.reload();
-    });
+    const logContainer = shutdownScreen.querySelector('#shutdown-log');
+    const shutdownLines = [
+      "Stopping guestbook synchronizer ... OK",
+      "Closing active window handles ... OK",
+      "Terminating user session processes ... OK",
+      "Saving system configuration to cookies ... OK",
+      "Shutting down Audio Subsystem ... OK",
+      "Unmounting virtual HDD partitions ... OK",
+      "Stopping kernel services ... OK",
+      "Flushing BIOS cache ... OK",
+      "Shinshila Megatrends ACPI Power Down Command sent."
+    ];
+
+    let lineIndex = 0;
+    function printShutdownLine() {
+      if (lineIndex < shutdownLines.length) {
+        const p = document.createElement('div');
+        p.textContent = shutdownLines[lineIndex];
+        logContainer.appendChild(p);
+        lineIndex++;
+
+        const delay = 80 + Math.random() * 80;
+        setTimeout(printShutdownLine, delay);
+      } else {
+
+        setTimeout(() => {
+          showFinalShutdownView();
+        }, 800);
+      }
+    }
+
+    function showFinalShutdownView() {
+      shutdownScreen.innerHTML = '';
+      shutdownScreen.style.alignItems = 'center';
+      shutdownScreen.style.justifyContent = 'center';
+      shutdownScreen.style.fontFamily = "'8bitoperator', monospace";
+      shutdownScreen.style.color = '#ff3333';
+
+      shutdownScreen.innerHTML = `
+        <div style="font-size: 24px; font-weight: bold; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">SYSTEM SHUTDOWN</div>
+        <div style="font-size: 14px; margin-top: 15px; color: #fff; text-align: center; font-family: '8bitoperator', monospace;">Теперь питание компьютера можно отключить.</div>
+        <button id="btn-reboot" class="btn-retro" style="margin-top: 30px; padding: 6px 12px; font-size: 12px;">Перезагрузка</button>
+      `;
+
+      document.getElementById('btn-reboot').addEventListener('click', () => {
+        shutdownScreen.remove();
+        bgFadeOverlay.remove();
+        setCookie('danshag_visits', '0', 365);
+        window.location.reload();
+      });
+    }
+
+
+    setTimeout(printShutdownLine, 400);
   });
 }
 
-// ================= ЛОГИКА БЛОКНОТА =================
+
 
 function saveNotepadContent() {
   const text = document.getElementById('notepad-textarea').value;
@@ -1353,7 +1738,7 @@ function loadNotepadContent() {
   }
 }
 
-// ================= ЛОГИКА РЕТРО-ПЛЕЕРА =================
+
 
 window.audioPlayerInstance = new Audio();
 window.playerPlaylist = [];
@@ -1367,24 +1752,24 @@ async function initAudioPlayer() {
   const prevBtn = document.getElementById('player-prev');
   const nextBtn = document.getElementById('player-next');
 
-  // Статический массив треков. Впишите сюда ваши реальные файлы из папки assets/music/
+
   let tracks = [
-    "MyBoy.mp3",
-    "02_любимый_трек_2.mp3",
-    "03_любимый_трек_3.mp3",
-    "04_любимый_трек_4.mp3",
-    "05_любимый_трек_5.mp3",
-    "06_любимый_трек_6.mp3",
-    "07_любимый_трек_7.mp3",
-    "08_любимый_трек_8.mp3",
-    "09_любимый_трек_9.mp3",
-    "10_любимый_трек_10.mp3"
+    "Disturbed_-_Decadence.mp3",
+    "Bullet_For_My_Valentine_-_Hand_Of_Blood.mp3",
+    "Avenged_Sevenfold_-_Blinded_in_chains.mp3",
+    "SAMURAI_-_Chippin_In.mp3",
+    "SAMURAI_-_The_Ballad_of_Buck_Ravers.mp3",
+    "KNSRK_-_Unwelcome_school_phonk_version.mp3",
+    "Toby_Fox_-_Cutie_Mew_Mew_Magic.mp3",
+    "Metal_Gear_Rising_Revengeance_-_It_Has_to_Be_This_Way",
+    "Rezodrone_-_REAKTION.mp3",
+    "Icky_Blossoms_-_Cycle.mp3"
   ];
 
   window.playerPlaylist = tracks;
   renderPlaylist();
 
-  // Привязка управления
+
   playBtn.onclick = togglePlay;
   stopBtn.onclick = stopTrack;
   prevBtn.onclick = prevTrack;
@@ -1401,7 +1786,7 @@ async function initAudioPlayer() {
     }
   };
 
-  // Обновление тайм-кодов и бегунка
+
   window.audioPlayerInstance.ontimeupdate = () => {
     const curTimeSpan = document.getElementById('player-time-current');
     const durTimeSpan = document.getElementById('player-time-duration');
@@ -1428,7 +1813,7 @@ function renderPlaylist() {
     if (index === window.playerCurrentIndex && !window.audioPlayerInstance.paused) {
       item.classList.add('playing-active');
     }
-    // Вывод названия файла без расширения
+
     const title = track.replace(/\.[^/.]+$/, "");
     item.textContent = `${index + 1}. ${title}`;
     item.onclick = () => playTrack(index);
@@ -1492,7 +1877,7 @@ function formatTime(seconds) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-// ================= ЛОГИКА КОМАНДНОЙ СТРОКИ (CMD) =================
+
 
 function initCommandLine() {
   const cmdInput = document.getElementById('cmd-input');
@@ -1506,7 +1891,7 @@ function initCommandLine() {
     });
   }
 
-  // Слежение за возвращением пользователя на вкладку (команда anvoidy)
+
   window.addEventListener('focus', () => {
     if (sessionStorage.getItem('anvoidy_opened') === 'true') {
       const output = document.getElementById('cmd-terminal-output');
@@ -1527,7 +1912,7 @@ function executeCommand(input) {
   const output = document.getElementById('cmd-terminal-output');
   if (!output) return;
 
-  // Отрисовка строки ввода
+
   const line = document.createElement('div');
   line.innerHTML = `<span style="color: #fff;">C:\\&gt;</span> ${input}`;
   output.appendChild(line);
@@ -1547,7 +1932,7 @@ function executeCommand(input) {
     `;
   } else if (cmd === 'about') {
     res.innerHTML = `
-      DanShag OS [Version 10.07.26]<br>
+      ShagOS (ShinshilaOS) [Version 17.07.26]<br>
       Все права спизжены. ©<br>
       Разработка: DanShag.
     `;
@@ -1562,7 +1947,7 @@ function executeCommand(input) {
     executeSystemDestruction(output);
     return;
   } else if (cmd === '') {
-    // Пустой ввод
+
     return;
   } else {
     res.textContent = `"${input}" не является внутренней или внешней командой, исполняемой программой или пакетным файлом.`;
@@ -1577,11 +1962,18 @@ function focusCmdInput() {
   if (input) input.focus();
 }
 
-// ================= СЦЕНАРИЙ УНИЧТОЖЕНИЯ СИСТЕМЫ (del C:) =================
+
 
 function executeSystemDestruction(output) {
   const input = document.getElementById('cmd-input');
   if (input) input.disabled = true;
+
+
+  if (startupAudio) startupAudio.pause();
+  if (ambientAudio) ambientAudio.pause();
+  if (window.audioPlayerInstance) {
+    window.audioPlayerInstance.pause();
+  }
 
   const logs = [
     "Удаление дескрипторов C:\\Windows...",
@@ -1602,12 +1994,12 @@ function executeSystemDestruction(output) {
       output.scrollTop = output.scrollHeight;
 
       if (index === logs.length - 1) {
-        // Добавляем класс темноты на html и body, чтобы полностью убрать фоновые изображения
+
         document.documentElement.classList.add('system-dead');
         document.body.classList.add('destruction-glitch', 'system-dead');
 
         setTimeout(() => {
-          // Запись состояния и полный блэкаут
+
           setCookie('danshag_sys_deleted', 'true', 365);
           localStorage.setItem('danshag_sys_deleted', 'true');
 
@@ -1623,7 +2015,7 @@ function executeSystemDestruction(output) {
   });
 }
 
-// ================= ВОССТАНОВЛЕНИЕ СИСТЕМЫ =================
+
 
 function showRecoveryPrompt() {
   document.body.innerHTML = `
@@ -1674,7 +2066,7 @@ function runSystemRecovery() {
       index++;
     } else {
       clearInterval(interval);
-      // Очистка cookies и localStorage
+
       setCookie('danshag_sys_deleted', 'false', -1);
       localStorage.removeItem('danshag_sys_deleted');
       setTimeout(() => {

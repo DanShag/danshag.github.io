@@ -1,4 +1,4 @@
-/* Подключение ретро-шрифта */
+﻿/* Подключение ретро-шрифта */
 @font-face {
   font-family: '8bitoperator';
   src: url('./assets/fonts/8bitoperator_jve.ttf') format('truetype');
@@ -11,20 +11,31 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  image-rendering: pixelated; /* Пикселизированный рендеринг для изображений и иконок */
+  image-rendering: pixelated;
+  /* Пикселизированный рендеринг для изображений и иконок */
 }
 
 :root {
-  --desktop-zoom: 1.2; /* Масштаб всего интерфейса внутри монитора (1.2 = 120%) */
+  --desktop-zoom: 1.2;
+  /* Масштаб всего интерфейса внутри монитора (1.2 = 120%) */
 }
 
 @keyframes live-gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-body, html {
+body,
+html {
   width: 100%;
   height: 100%;
   background-color: #050505;
@@ -41,7 +52,10 @@ body, html {
   cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMCAwTDAgMTdMNC41IDEyLjVMOSAyMS41TDEyIDIwTDcuNSAxMUwxMyAxMVoiIGZpbGw9IndoaXRlIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPjwvc3ZnPg==") 0 0, auto;
 }
 
-a, button, .win-btn, .desktop-icon {
+a,
+button,
+.win-btn,
+.desktop-icon {
   cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8cGF0aCBkPSJNIDggMiBMIDExIDIgTCAxMSA1IEwgMTQgNSBMIDE0IDYgTCAxNyA2IEwgMTcgOCBMIDIwIDggTCAyMCAxNCBMIDE5IDE4IEwgMTUgMjIgTCA5IDIyIEwgNyAxOSBMIDcgMTMgTCAzIDEzIEwgMyA5IEwgOCA5IFoiIGZpbGw9IndoaXRlIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogIDwhLS0gSW5uZXIgc2VwYXJhdGluZyBsaW5lcyBmb3IgYWRqYWNlbnQgZmluZ2VycyAtLT4KICA8bGluZSB4MT0iMTEiIHkxPSI1IiB4Mj0iMTEiIHkyPSIxOCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjE0IiB5MT0iNiIgeDI9IjE0IiB5Mj0iMTgiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSIxNyIgeTE9IjgiIHgyPSIxNyIgeTI9IjE4IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8IS0tIEluZGV4IGZpbmdlciBsZWZ0IGJvcmRlciBkb3duIHRvIHBhbG0gLS0+CiAgPGxpbmUgeDE9IjgiIHkxPSIyIiB4Mj0iOCIgeTI9IjkiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjwvc3ZnPg==") 8 2, auto;
 }
 
@@ -68,11 +82,15 @@ a, button, .win-btn, .desktop-icon {
 
 /* Стадии поглощения тьмой */
 .darkness-stage-1 {
-  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.85);
+  background-color: #777777 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.7) !important;
 }
 
 .darkness-stage-2 {
-  box-shadow: inset 0 0 280px rgba(0, 0, 0, 0.98);
+  background-color: #222222 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 300px rgba(0, 0, 0, 0.95) !important;
 }
 
 .darkness-stage-3 {
@@ -82,9 +100,13 @@ a, button, .win-btn, .desktop-icon {
 }
 
 #intro-content {
+  position: relative;
+  z-index: 10;
+  /* Текст находится поверх виньетки, чтобы оставаться видимым */
   max-width: 600px;
   line-height: 1.6;
-  transition: opacity 1s ease; /* Плавное скрытие текста */
+  transition: opacity 1s ease;
+  /* Плавное скрытие текста */
 }
 
 .intro-fadeout {
@@ -107,7 +129,8 @@ a, button, .win-btn, .desktop-icon {
   height: 100vh;
   overflow: hidden;
   position: relative;
-  z-index: 2; /* Располагает монитор поверх эффекта ЭЛТ на заднем фоне */
+  z-index: 2;
+  /* Располагает монитор поверх эффекта ЭЛТ на заднем фоне */
 }
 
 .monitor-bezel {
@@ -121,7 +144,7 @@ a, button, .win-btn, .desktop-icon {
   border-right: 16px solid #0a0a0a;
   border-bottom: 16px solid #0a0a0a;
   outline: 2px solid #444444;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 15px rgba(255,255,255,0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   padding: 12px;
@@ -134,7 +157,10 @@ a, button, .win-btn, .desktop-icon {
 .monitor-bezel::after {
   content: "";
   position: absolute;
-  top: 12px; left: 12px; right: 12px; bottom: 12px;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
   background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
   background-size: 100% 4px, 6px 100%;
   z-index: 100;
@@ -145,18 +171,19 @@ a, button, .win-btn, .desktop-icon {
 #desktop-container {
   /* Зум контента остается активным */
   zoom: var(--desktop-zoom);
-  
+
   /* Возвращаем контейнер на полные 100% рамки монитора */
   width: 100%;
   height: 100%;
-  
+
   flex-grow: 1;
   position: relative;
   overflow: hidden;
-  border: 4px inset #808080;
-  background-color: #3a6ea5; /* Классический Windows Blue */
+  background-color: transparent;
+  /* Классический Windows Blue */
   display: flex;
   flex-direction: column;
+  z-index: 2;
 }
 
 /* ================= ГЛИТЧ ОБОЕВ ================= */
@@ -165,34 +192,42 @@ a, button, .win-btn, .desktop-icon {
     transform: scale(1) skewX(0deg);
     filter: hue-rotate(0deg) contrast(1) brightness(1);
   }
+
   1.5% {
     transform: scale(1.03, 0.95) skewX(2deg);
     filter: hue-rotate(20deg) contrast(1.2) brightness(1.1);
   }
+
   3% {
     transform: scale(0.97, 1.05) skewX(-2deg);
     filter: hue-rotate(-20deg) contrast(0.8) brightness(0.9);
   }
+
   4.5% {
     transform: scale(1) skewX(0deg);
     filter: none;
   }
+
   45% {
     transform: scale(1) skewX(0deg);
     filter: none;
   }
+
   46.5% {
     transform: scale(1.05, 0.9) skewX(-1deg);
     filter: invert(0.05) contrast(1.3);
   }
+
   48% {
     transform: scale(0.95, 1.08) skewX(1deg);
     filter: hue-rotate(45deg);
   }
+
   49.5% {
     transform: scale(1) skewX(0deg);
     filter: none;
   }
+
   100% {
     transform: scale(1) skewX(0deg);
     filter: none;
@@ -201,7 +236,10 @@ a, button, .win-btn, .desktop-icon {
 
 .desktop-wallpaper {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
   /* Указан путь к winxp.jpg, с градиентом в качестве фоллбека */
   background-image: url('./assets/winxp.jpg'), linear-gradient(135deg, #1e528e 0%, #3075b9 100%);
   background-size: cover;
@@ -245,13 +283,33 @@ a, button, .win-btn, .desktop-icon {
 
 /* Эффект плавной тряски DanShag */
 @keyframes text-smooth-shake {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  10% { transform: translate(-0.5px, 0.5px) rotate(-0.5deg); }
-  20% { transform: translate(0.5px, -0.5px) rotate(0.5deg); }
-  30% { transform: translate(-0.5px, -0.5px) rotate(-0.5deg); }
-  40% { transform: translate(0.5px, 0.5px) rotate(0.5deg); }
-  50% { transform: translate(0, 0) rotate(0deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  10% {
+    transform: translate(-0.5px, 0.5px) rotate(-0.5deg);
+  }
+
+  20% {
+    transform: translate(0.5px, -0.5px) rotate(0.5deg);
+  }
+
+  30% {
+    transform: translate(-0.5px, -0.5px) rotate(-0.5deg);
+  }
+
+  40% {
+    transform: translate(0.5px, 0.5px) rotate(0.5deg);
+  }
+
+  50% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
 }
 
 .shake-text {
@@ -305,7 +363,7 @@ a, button, .win-btn, .desktop-icon {
 }
 
 .icon-large {
-  filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
+  filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.5));
 }
 
 .icon-label {
@@ -466,10 +524,12 @@ a, button, .win-btn, .desktop-icon {
     background-color: rgba(255, 255, 0, 0.03);
     box-shadow: inset 0 0 4px rgba(255, 255, 0, 0.05);
   }
+
   50% {
     background-color: rgba(255, 255, 0, 0.15);
     box-shadow: inset 0 0 8px rgba(255, 255, 0, 0.3);
   }
+
   100% {
     background-color: rgba(255, 255, 0, 0.03);
     box-shadow: inset 0 0 4px rgba(255, 255, 0, 0.05);
@@ -679,14 +739,13 @@ a, button, .win-btn, .desktop-icon {
 /* ================= ДАННЫЕ О РЕЛИЗЕ ================= */
 .release-info {
   position: absolute;
-  bottom: 32px;
-  right: 6px;
+  bottom: 40px;
+  right: 16px;
+  color: rgba(255, 255, 255, 0.28);
   text-align: right;
-  z-index: 5;
-  color: rgba(255, 255, 255, 0.65);
-  text-shadow: 1px 1px 1px #000000;
-  line-height: 1.3;
+  font-family: '8bitoperator', monospace;
   pointer-events: none;
+  z-index: 1;
 }
 
 .release-line {
@@ -695,9 +754,17 @@ a, button, .win-btn, .desktop-icon {
 
 /* ================= ПАНЕЛЬ ЗАДАЧ WINDOWS 2000 (ДВИГАЮЩИЙСЯ ГРАДИЕНТ) ================= */
 @keyframes taskbar-gradient-move {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .taskbar {
@@ -711,14 +778,14 @@ a, button, .win-btn, .desktop-icon {
   align-items: center;
   padding: 2px;
   z-index: 50;
-  
+
   /* ИСПРАВЛЕНО: жесткое позиционирование внизу контейнера */
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   width: 100%;
-  
+
   user-select: none;
 }
 
@@ -740,7 +807,8 @@ a, button, .win-btn, .desktop-icon {
   color: #ffffff;
 }
 
-.start-button:active, .start-button.active {
+.start-button:active,
+.start-button.active {
   border-top: 1.5px solid #080808;
   border-left: 1.5px solid #080808;
   border-right: 1.5px solid #444444;
@@ -826,26 +894,32 @@ a, button, .win-btn, .desktop-icon {
     transform: translate(0, 0) skewX(0deg);
     filter: hue-rotate(0deg) blur(0px) contrast(1);
   }
+
   10% {
     transform: translate(-4px, 3px) skewX(4deg);
     filter: hue-rotate(90deg) blur(1px) contrast(1.4);
   }
+
   20% {
     transform: translate(4px, -3px) skewX(-4deg);
     filter: hue-rotate(-90deg) contrast(0.8);
   }
+
   30% {
     transform: translate(-2px, -4px) skewX(2deg);
     filter: invert(0.1) contrast(1.6);
   }
+
   40% {
     transform: translate(3px, 2px) skewX(-2deg);
     filter: hue-rotate(180deg) blur(1.5px);
   }
+
   50% {
     transform: translate(0, 0) skewX(0deg);
     filter: none;
   }
+
   100% {
     transform: translate(0, 0) skewX(0deg);
     filter: none;
@@ -859,7 +933,10 @@ a, button, .win-btn, .desktop-icon {
 
 .glitch-active .glitch-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(255, 0, 0, 0.05);
   z-index: 10000;
   pointer-events: none;
@@ -867,8 +944,13 @@ a, button, .win-btn, .desktop-icon {
 }
 
 @keyframes flash {
-  0% { background-color: rgba(255, 0, 0, 0.05); }
-  100% { background-color: rgba(0, 0, 255, 0.05); }
+  0% {
+    background-color: rgba(255, 0, 0, 0.05);
+  }
+
+  100% {
+    background-color: rgba(0, 0, 255, 0.05);
+  }
 }
 
 /* Скроллбары а-ля Windows 2000 (Темные) */
@@ -910,6 +992,7 @@ a, button, .win-btn, .desktop-icon {
   0% {
     top: -15%;
   }
+
   100% {
     top: 115%;
   }
@@ -922,16 +1005,15 @@ body::before {
   left: 0;
   width: 100%;
   height: 140px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.03) 10%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(0, 0, 0, 0.18) 55%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.03) 10%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(0, 0, 0, 0.18) 55%,
+      rgba(255, 255, 255, 0) 100%);
   pointer-events: none;
-  z-index: 1; /* Под монитором (z-index: 2), но поверх фонового изображения */
+  z-index: 1;
+  /* Под монитором (z-index: 2), но поверх фонового изображения */
   animation: crt-rolling-line 7s linear infinite;
 }
 
@@ -943,12 +1025,14 @@ body::before {
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.4), inset 0 0 4px rgba(0, 255, 0, 0.2);
 }
 
-.start-ds-glow:active, .start-ds-glow.active {
+.start-ds-glow:active,
+.start-ds-glow.active {
   background-color: #051c05 !important;
   box-shadow: 0 0 12px rgba(0, 255, 0, 0.6), inset 0 0 6px rgba(0, 255, 0, 0.4);
 }
 
-.ds-flag-glowing, .ds-icon-glowing {
+.ds-flag-glowing,
+.ds-icon-glowing {
   filter: drop-shadow(0 0 4px #00ff00);
 }
 
@@ -964,7 +1048,7 @@ body::before {
 .player-top-panel {
   background: linear-gradient(180deg, #222226 0%, #1c1c20 100%);
   border: 2px solid #33333b;
-  box-shadow: inset 1px 1px 0px #4e4e5a, 2px 2px 4px rgba(0,0,0,0.5);
+  box-shadow: inset 1px 1px 0px #4e4e5a, 2px 2px 4px rgba(0, 0, 0, 0.5);
   border-radius: 4px;
   padding: 8px;
 }
@@ -1175,26 +1259,32 @@ body::before {
     transform: scale(1) translate(0, 0) skewX(0);
     filter: hue-rotate(0deg) contrast(1) blur(0px);
   }
+
   15% {
     transform: scale(1.08, 0.9) translate(-10px, 8px) skewX(12deg);
     filter: hue-rotate(90deg) contrast(2) blur(1.5px);
   }
+
   30% {
     transform: scale(0.92, 1.1) translate(12px, -8px) skewX(-12deg);
     filter: hue-rotate(180deg) contrast(3) invert(0.2);
   }
+
   45% {
     transform: scale(1.15, 0.8) translate(-15px, -15px) skewX(20deg);
     filter: hue-rotate(270deg) contrast(0.5) blur(2px);
   }
+
   60% {
     transform: scale(0.8, 1.25) translate(15px, 15px) skewX(-20deg);
     filter: invert(1) grayscale(1) brightness(2);
   }
+
   80% {
     transform: scale(1.2, 0.7) translate(-25px, 0px) skewX(30deg);
     filter: hue-rotate(360deg) contrast(4) blur(3px);
   }
+
   100% {
     transform: scale(0) translate(0, 0);
     filter: brightness(0);
@@ -1208,7 +1298,10 @@ body::before {
 
 #critical-system-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: #000000;
   color: #ff3333;
   display: flex;
@@ -1278,7 +1371,8 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  transform: translateY(-14px); /* Коррекция смещения из-за панели задач */
+  transform: translateY(-14px);
+  /* Коррекция смещения из-за панели задач */
 }
 
 /* ================= АБСОЛЮТНОЕ ОТКЛЮЧЕНИЕ СИСТЕМЫ (ТЕМНОТА) ================= */
@@ -1372,7 +1466,8 @@ body.system-dead .window:not(#win-cmd) {
 /* Шрифт в текстовом редакторе Блокнота: увеличен до 13px */
 #notepad-textarea {
   font-size: 13px !important;
-  height: 290px !important; /* Увеличено текстовое поле */
+  height: 290px !important;
+  /* Увеличено текстовое поле */
 }
 
 /* Название трека в плеере: увеличен до 13px */
@@ -1393,14 +1488,19 @@ body.system-dead .window:not(#win-cmd) {
 /* ================= СТИЛИ ЭКРАНА ЗАГРУЗКИ ================= */
 #boot-screen {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: #000000;
   z-index: 9999;
   padding: 20px;
   box-sizing: border-box;
   font-family: 'Courier New', monospace;
-  color: #ffffff;            /* Цвет изменен на белый */
-  font-size: 14.4px;         /* Текст увеличен на 20% (было 12px) */
+  color: #ffffff;
+  /* Цвет изменен на белый */
+  font-size: 14.4px;
+  /* Текст увеличен на 20% (было 12px) */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -1420,7 +1520,8 @@ body.system-dead .window:not(#win-cmd) {
   right: 12px;
   z-index: 10000;
   background-color: #1a1a1a;
-  color: #ffffff;            /* Цвет кнопки изменен на белый */
+  color: #ffffff;
+  /* Цвет кнопки изменен на белый */
   border: 1.5px solid #ffffff;
   font-family: '8bitoperator', monospace;
   font-size: 11px;
@@ -1436,53 +1537,65 @@ body.system-dead .window:not(#win-cmd) {
 /* Симуляция загрузки в стиле Windows XP */
 #os-loading {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(-45deg, #020202, #101012, #24242a, #52525b, #101012, #020202);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(-45deg, #00081a, #03153b, #092860, #021a4b, #03153b, #00081a);
   background-size: 400% 400%;
-  animation: live-gradient 18s ease infinite;
+  animation: live-gradient 6s ease infinite;
+  /* Ускорено с 18s до 6s */
   z-index: 99995;
   color: #ffffff;
   font-family: '8bitoperator', monospace;
 }
 
+.xp-loader-centered-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  gap: 20px;
+  user-select: none;
+}
+
 .xp-welcome-text {
-  position: absolute;
-  top: 48%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   font-size: 26px;
   font-weight: bold;
   text-align: center;
   text-shadow: 2px 2px 4px #000;
-  width: 90%;
   animation: welcome-pulse 2s infinite ease-in-out;
 }
 
 @keyframes welcome-pulse {
-  0% { opacity: 0.85; transform: translate(-50%, -50%) scale(0.98); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.02); }
-  100% { opacity: 0.85; transform: translate(-50%, -50%) scale(0.98); }
+  0% {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
 }
 
-.xp-loading-container {
-  position: absolute;
-  bottom: 24px;
-  left: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.xp-loading-logo {
-  font-size: 18px;
-  text-shadow: 1px 1px 2px #000;
-  color: #3399ff;
+.xp-loading-logo-img {
+  width: 400px;
+  /* Крупная версия логотипа */
+  height: auto;
+  image-rendering: pixelated;
 }
 
 .xp-loading-bar {
-  width: 180px;
-  height: 14px;
+  width: 240px;
+  height: 18px;
   border: 1.5px solid #808080;
   background-color: #000;
   position: relative;
@@ -1491,15 +1604,57 @@ body.system-dead .window:not(#win-cmd) {
 
 .xp-loading-bar span {
   position: absolute;
-  width: 35px;
+  width: 48px;
   height: 100%;
   background: linear-gradient(90deg, #0055ff, #00aaff, #0055ff);
   animation: xp-bar-move 1.5s infinite linear;
 }
 
+/* Брендовый заголовок в стиле American Megatrends */
+.bios-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #555;
+  padding-bottom: 12px;
+}
+
+.bios-logo-svg {
+  flex-shrink: 0;
+}
+
+.bios-brand-text {
+  display: flex;
+  flex-direction: column;
+  font-family: '8bitoperator', monospace;
+  color: #ffffff;
+  line-height: 1.2;
+  user-select: none;
+  transform: scaleX(1.4);
+  transform-origin: left center;
+}
+
+.bios-brand-title {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.bios-brand-subtitle {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #dfdfdf;
+}
+
 @keyframes xp-bar-move {
-  0% { left: -35px; }
-  100% { left: 180px; }
+  0% {
+    left: -35px;
+  }
+
+  100% {
+    left: 180px;
+  }
 }
 
 /* ================= СТИЛИ НАСТРОЕК ================= */
@@ -1597,7 +1752,8 @@ body.no-outer-bg {
   bottom: 34px;
   right: 6px;
   width: 250px;
-  background-color: #ffffe1; /* Классический цвет подсказки Windows */
+  background-color: #ffffe1;
+  /* Классический цвет подсказки Windows */
   color: #000000;
   border: 1px solid #000000;
   padding: 6px 8px;
@@ -1667,9 +1823,17 @@ body.no-outer-bg {
 }
 
 @keyframes slow-taskbar-gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .guestbook-header-menu {
@@ -1755,7 +1919,7 @@ body.no-outer-bg {
   border: 1px solid #222;
   padding: 6px 8px;
   border-radius: 2px;
-  box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .guestbook-entry-header {
@@ -1784,4 +1948,99 @@ body.no-outer-bg {
   white-space: pre-wrap;
   font-family: '8bitoperator', monospace;
   color: #ddd;
+}
+
+/* ================= РЕМОНТНАЯ ЛЕНТА (В РАЗРАБОТКЕ) ================= */
+.construction-tape-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(12, 12, 12, 0.75);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  pointer-events: auto;
+  /* Блокирует клики к элементам под ней */
+}
+
+.construction-tape-ribbon {
+  background: repeating-linear-gradient(-45deg,
+      #fcd116,
+      #fcd116 10px,
+      #111111 10px,
+      #111111 20px);
+  width: 130%;
+  text-align: center;
+  padding: 3px 0;
+  transform: rotate(-6deg);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
+  border-top: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+}
+
+.construction-tape-text {
+  background-color: #fcd116;
+  color: #000000;
+  display: inline-block;
+  padding: 1px 12px;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: '8bitoperator', monospace;
+  border-radius: 1px;
+}
+
+.construction-tape-subtext {
+  font-size: 8px;
+  color: #c0c0c0;
+  margin-top: 6px;
+  font-family: '8bitoperator', monospace;
+  text-shadow: 1px 1px 2px #000;
+}
+
+/* Двухколоночный макет настроек */
+.settings-columns-container {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.settings-column-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-column-right {
+  width: 160px;
+  border-left: 1.5px solid #808080;
+  box-shadow: inset 1px 0 0 #ffffff;
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#skip-intro-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10010;
+  background-color: #111111;
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  font-family: '8bitoperator', monospace;
+  font-size: 11px;
+  padding: 5px 10px;
+  cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8cGF0aCBkPSJNIDggMiBMIDExIDIgTCAxMSA1IEwgMTQgNSBMIDE0IDYgTCAxNyA2IEwgMTcgOCBMIDIwIDggTCAyMCAxNCBMIDE5IDE4IEwgMTUgMjIgTCA5IDIyIEwgNyAxOSBMIDcgMTMgTCAzIDEzIEwgMyA5IEwgOCA5IFoiIGZpbGw9IndoaXRlIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogIDwhLS0gSW5uZXIgc2VwYXJhdGluZyBsaW5lcyBmb3IgYWRqYWNlbnQgZmluZ2VycyAtLT4KICA8bGluZSB4MT0iMTEiIHkxPSI1IiB4Mj0iMTEiIHkyPSIxOCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjE0IiB5MT0iNiIgeDI9IjE0IiB5Mj0iMTgiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSIxNyIgeTE9IjgiIHgyPSIxNyIgeTI9IjE4IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8IS0tIEluZGV4IGZpbmdlciBsZWZ0IGJvcmRlciBkb3duIHRvIHBhbG0gLS0+CiAgPGxpbmUgeDE9IjgiIHkxPSIyIiB4Mj0iOCIgeTI9IjkiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjwvc3ZnPg==") 8 2, auto;
+  outline: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+#skip-intro-btn:active {
+  background-color: #333333;
 }

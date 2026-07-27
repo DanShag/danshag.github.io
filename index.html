@@ -33,13 +33,15 @@
         <!-- Верхняя статус-панель для мобильной версии -->
         <div id="mobile-status-bar" class="mobile-status-bar" style="display: none;">
           <div class="mobile-status-left">
-            <span id="mobile-music-note" class="mobile-music-note" style="display: none;" onclick="openWindow('win-player')" title="Открыть плеер">🎵</span>
+            <span id="mobile-music-note" class="mobile-music-note" style="display: none;"
+              onclick="openWindow('win-player')" title="Открыть плеер">🎵</span>
           </div>
           <div class="mobile-status-center">
             <span id="mobile-clock">00:00</span>
           </div>
           <div class="mobile-status-right">
-            <svg class="pixel-icon wifi-icon" viewBox="0 0 20 12" width="16" height="10" style="filter: drop-shadow(0 0 3px #00ff00);">
+            <svg class="pixel-icon wifi-icon" viewBox="0 0 20 12" width="16" height="10"
+              style="filter: drop-shadow(0 0 3px #00ff00);">
               <path d="M 1 2 Q 10 -2 19 2" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="square" />
               <path d="M 4 5 Q 10 2 16 5" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="square" />
               <path d="M 7 8 Q 10 6 13 8" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="square" />
@@ -177,13 +179,16 @@
               <!-- Иконка: Changelog -->
               <button class="desktop-icon" id="icon-changelog" onclick="openWindow('win-changelog')">
                 <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
-                  <rect x="2" y="1" width="12" height="14" fill="#ffffff" />
-                  <rect x="3" y="4" width="2" height="2" fill="#00aa00" />
-                  <rect x="6" y="4" width="6" height="1.5" fill="#000000" />
-                  <rect x="3" y="7.5" width="2" height="2" fill="#00aa00" />
-                  <rect x="6" y="7.5" width="7" height="1.5" fill="#000000" />
-                  <rect x="3" y="11" width="2" height="2" fill="#00aa00" />
-                  <rect x="6" y="11" width="5" height="1.5" fill="#000000" />
+                  <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
+                  <rect x="4" y="4" width="2" height="2" fill="#ff2222" />
+                  <rect x="7" y="4.5" width="4" height="1" fill="#000000" />
+                  <rect x="4" y="7.5" width="2" height="2" fill="#ff2222" />
+                  <rect x="7" y="8" width="4" height="1" fill="#000000" />
+                  <rect x="4" y="11" width="2" height="2" fill="#ff2222" />
+                  <rect x="7" y="11.5" width="3" height="1" fill="#000000" />
+                  <path d="M10,13 L14,9 L15,10 L11,14 Z" fill="#0066ff" />
+                  <polygon points="10,13 9,14 10,14" fill="#ffcc00" />
+                  <rect x="9" y="14" width="1" height="1" fill="#000000" />
                 </svg>
                 <span class="icon-label">Changelog</span>
               </button>
@@ -196,7 +201,8 @@
             <div class="mobile-tiles-header">
               <div class="mobile-header-brand">
                 <div class="mobile-ds-logo">
-                  <svg class="ds-pixel-art-logo" viewBox="0 0 40 40" width="54" height="54" style="shape-rendering: crispEdges; filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));">
+                  <svg class="ds-pixel-art-logo" viewBox="0 0 40 40" width="54" height="54"
+                    style="shape-rendering: crispEdges; filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));">
                     <defs>
                       <linearGradient id="dsPixelSilverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#ffffff" />
@@ -205,9 +211,11 @@
                       </linearGradient>
                     </defs>
                     <!-- Letter D (Top Left) -->
-                    <path d="M 4 4 H 18 V 8 H 22 V 20 H 18 V 24 H 4 Z M 9 9 V 19 H 14 V 16 H 17 V 12 H 14 V 9 Z" fill="url(#dsPixelSilverGrad)" />
+                    <path d="M 4 4 H 18 V 8 H 22 V 20 H 18 V 24 H 4 Z M 9 9 V 19 H 14 V 16 H 17 V 12 H 14 V 9 Z"
+                      fill="url(#dsPixelSilverGrad)" />
                     <!-- Letter S (Bottom Right Interlocking) -->
-                    <path d="M 16 16 H 32 V 20 H 21 V 23 H 32 V 35 H 16 V 31 H 27 V 28 H 16 Z" fill="url(#dsPixelSilverGrad)" />
+                    <path d="M 16 16 H 32 V 20 H 21 V 23 H 32 V 35 H 16 V 31 H 27 V 28 H 16 Z"
+                      fill="url(#dsPixelSilverGrad)" />
                   </svg>
                 </div>
                 <div class="mobile-welcome-box">
@@ -300,13 +308,16 @@
               <button class="mobile-tile tile-cyan" onclick="openWindow('win-changelog')">
                 <div class="tile-icon-wrapper">
                   <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
-                    <rect x="2" y="1" width="12" height="14" fill="#ffffff" />
-                    <rect x="3" y="4" width="2" height="2" fill="#00aa00" />
-                    <rect x="6" y="4" width="6" height="1.5" fill="#000000" />
-                    <rect x="3" y="7.5" width="2" height="2" fill="#00aa00" />
-                    <rect x="6" y="7.5" width="7" height="1.5" fill="#000000" />
-                    <rect x="3" y="11" width="2" height="2" fill="#00aa00" />
-                    <rect x="6" y="11" width="5" height="1.5" fill="#000000" />
+                    <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
+                    <rect x="4" y="4" width="2" height="2" fill="#ff2222" />
+                    <rect x="7" y="4.5" width="4" height="1" fill="#000000" />
+                    <rect x="4" y="7.5" width="2" height="2" fill="#ff2222" />
+                    <rect x="7" y="8" width="4" height="1" fill="#000000" />
+                    <rect x="4" y="11" width="2" height="2" fill="#ff2222" />
+                    <rect x="7" y="11.5" width="3" height="1" fill="#000000" />
+                    <path d="M10,13 L14,9 L15,10 L11,14 Z" fill="#0066ff" />
+                    <polygon points="10,13 9,14 10,14" fill="#ffcc00" />
+                    <rect x="9" y="14" width="1" height="1" fill="#000000" />
                   </svg>
                 </div>
                 <span class="tile-label">Changelog</span>
@@ -942,7 +953,7 @@
             </div>
             <div class="window-body cmd-window-body">
               <div class="cmd-terminal" id="cmd-terminal-output">
-                <div>ShinshilaSoft 2069 [Version 17.07.26]</div>
+                <div>ShinshilaSoft 2069 [Build 28/07/26]</div>
                 <div>(C) НонКопирайт 2022-2026 Shinshila Corp.</div>
                 <br>
                 <div>Введите "help" для получения списка доступных команд.</div>
@@ -960,13 +971,15 @@
             <div class="window-header">
               <div class="window-title-container">
                 <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
-                  <rect x="2" y="1" width="12" height="14" fill="#ffffff" />
-                  <rect x="3" y="4" width="2" height="2" fill="#00aa00" />
-                  <rect x="6" y="4" width="6" height="1" fill="#000000" />
-                  <rect x="3" y="7.5" width="2" height="2" fill="#00aa00" />
-                  <rect x="6" y="7.5" width="7" height="1" fill="#000000" />
-                  <rect x="3" y="11" width="2" height="2" fill="#00aa00" />
-                  <rect x="6" y="11" width="5" height="1" fill="#000000" />
+                  <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
+                  <rect x="4" y="4" width="2" height="2" fill="#ff2222" />
+                  <rect x="7" y="4.5" width="4" height="1" fill="#000000" />
+                  <rect x="4" y="7.5" width="2" height="2" fill="#ff2222" />
+                  <rect x="7" y="8" width="4" height="1" fill="#000000" />
+                  <rect x="4" y="11" width="2" height="2" fill="#ff2222" />
+                  <rect x="7" y="11.5" width="3" height="1" fill="#000000" />
+                  <path d="M10,13 L14,9 L15,10 L11,14 Z" fill="#0066ff" />
+                  <polygon points="10,13 9,14 10,14" fill="#ffcc00" />
                 </svg>
                 <span class="window-title">Changelog - История изменений</span>
               </div>
@@ -990,15 +1003,20 @@
                 -->
 
                 <div class="changelog-entry">
-                  <h3 class="changelog-version">Версия от 27 июля 2026 года</h3>
+                  <h3 class="changelog-version">>>> 28 июля 2026 года</h3>
                   <ul class="changelog-list">
-                    <li>‣   Реализована полноценная адаптивная мобильная версия в стиле Windows Phone 2000</li>
-                    <li>‣   Внедрена удобная плиточная система приложений с пиксельными иконками по центру</li>
-                    <li>‣   Создан экран загрузки "Shinshilin Phone" с прогресс-баром под текстом</li>
-                    <li>‣   Заменено приложение «Блокнот» на «Changelog» для просмотра истории обновлений</li>
-                    <li>‣   Обновлена иконка настроек на аккуратную пиксельную шестерёнку</li>
-                    <li>‣   Добавлена функциональность переключения изданий (Компьютерное / Мобильное) с затемнением и подтверждением</li>
-                    <li>‣   Верхняя строка уведомлений телефона с часами и иконкой воспроизведения музыки 🎵</li>
+                    <li>‣ Была реализована полноценная поддержка смартфонов, путём добавления мобильной версии сайта.
+                    </li>
+                    <li>‣ Блокнот был удалён из-за его бесполезности. Вместо него теперь Changelog.</li>
+                    <li>‣ Исправлены баги в плеере.</li>
+                    <li>‣ Изменена иконка "Настройки".</li>
+                  </ul>
+                </div>
+
+                <div class="changelog-entry">
+                  <h3 class="changelog-version">>>> 17 июля 2026 года</h3>
+                  <ul class="changelog-list">
+                    <li>‣ Первый релиз сайта.</li>
                   </ul>
                 </div>
 
@@ -1122,10 +1140,13 @@
                   <div class="info-block block-purple" style="box-sizing: border-box; margin-bottom: 0;">
                     <h3 class="subsection-title">ИЗДАНИЕ САЙТА</h3>
                     <div class="block-content" style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0;">
-                      <span style="font-size: 9.5px; color: #bbb; line-height: 1.3;">Переключение интерфейса сайта:</span>
+                      <span style="font-size: 9.5px; color: #bbb; line-height: 1.3;">Переключение интерфейса
+                        сайта:</span>
                       <div style="display: flex; flex-direction: column; gap: 6px;">
-                        <button class="btn-retro" id="btn-edition-pc" onclick="promptSwitchEdition('desktop')" style="width: 100%; font-size: 10px; padding: 5px;">Компьютерное</button>
-                        <button class="btn-retro" id="btn-edition-mobile" onclick="promptSwitchEdition('mobile')" style="width: 100%; font-size: 10px; padding: 5px;">Мобильное</button>
+                        <button class="btn-retro" id="btn-edition-pc" onclick="promptSwitchEdition('desktop')"
+                          style="width: 100%; font-size: 10px; padding: 5px;">Компьютерное</button>
+                        <button class="btn-retro" id="btn-edition-mobile" onclick="promptSwitchEdition('mobile')"
+                          style="width: 100%; font-size: 10px; padding: 5px;">Мобильное</button>
                       </div>
                     </div>
                   </div>
@@ -1193,7 +1214,7 @@
         </div>
 
         <div class="release-info">
-          <div class="release-line">vibecoded by DanShag. Версия от 17 июля 2026 года.</div>
+          <div class="release-line">vibecoded by DanShag. Версия от 28 июля 2026 года.</div>
           <div class="release-line">Все права отпущены и гуляют. Порадуйтесь за них.</div>
         </div>
 
@@ -1276,12 +1297,15 @@
         </div>
       </div>
       <div class="window-body" style="text-align: center; padding: 16px;">
-        <p id="edition-modal-text" style="font-size: 11px; margin-bottom: 16px; line-height: 1.4; color: #fff; font-family: '8bitoperator', monospace;">
+        <p id="edition-modal-text"
+          style="font-size: 11px; margin-bottom: 16px; line-height: 1.4; color: #fff; font-family: '8bitoperator', monospace;">
           Вы действительно хотите переключиться?
         </p>
         <div style="display: flex; justify-content: center; gap: 12px;">
-          <button class="btn-retro" id="edition-modal-confirm-btn" onclick="confirmSwitchEdition()" style="padding: 4px 16px; min-width: 70px;">Да</button>
-          <button class="btn-retro" onclick="closeEditionModal()" style="padding: 4px 16px; min-width: 70px;">Отмена</button>
+          <button class="btn-retro" id="edition-modal-confirm-btn" onclick="confirmSwitchEdition()"
+            style="padding: 4px 16px; min-width: 70px;">Да</button>
+          <button class="btn-retro" onclick="closeEditionModal()"
+            style="padding: 4px 16px; min-width: 70px;">Отмена</button>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ function getSavedEditionMode() {
   try {
     localStorage.removeItem('danshag_edition_manual');
     localStorage.removeItem('danshag_edition');
-  } catch(e) {}
+  } catch (e) { }
 
   const sessionOverride = sessionStorage.getItem('danshag_edition_session_override');
   if (sessionOverride === 'desktop' || sessionOverride === 'mobile') {
@@ -576,7 +576,7 @@ function confirmSwitchEdition() {
       localStorage.removeItem('danshag_edition_manual');
       localStorage.removeItem('danshag_edition');
       setCookie('danshag_edition', '', -1);
-    } catch(e) {}
+    } catch (e) { }
     closeEditionModal();
     location.reload();
   }
@@ -1565,7 +1565,7 @@ function renderTaskbar() {
       } else if (state.icon === 'cmd') {
         iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="1" y="1" width="14" height="14" fill="#000"/><path d="M4,4 L7,6 L4,8" stroke="#00ff00" stroke-width="1" fill="none" /></svg>`;
       } else if (state.icon === 'changelog') {
-        iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="2" y="1" width="12" height="14" fill="#fff"/><rect x="3" y="4" width="2" height="2" fill="#00aa00"/><rect x="6" y="4" width="6" height="1" fill="#000"/><rect x="3" y="7.5" width="2" height="2" fill="#00aa00"/><rect x="6" y="7.5" width="7" height="1" fill="#000"/></svg>`;
+        iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="2" y="1" width="11" height="14" fill="#ffffff" /><rect x="4" y="4" width="2" height="2" fill="#ff2222" /><rect x="7" y="4.5" width="4" height="1" fill="#000000" /><rect x="4" y="7.5" width="2" height="2" fill="#ff2222" /><rect x="7" y="8" width="4" height="1" fill="#000000" /><rect x="4" y="11" width="2" height="2" fill="#ff2222" /><rect x="7" y="11.5" width="3" height="1" fill="#000000" /><path d="M10,13 L14,9 L15,10 L11,14 Z" fill="#0066ff" /><polygon points="10,13 9,14 10,14" fill="#ffcc00" /></svg>`;
       } else if (state.icon === 'settings') {
         iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="6" y="0" width="4" height="2" fill="#aaa"/><rect x="6" y="14" width="4" height="2" fill="#555"/><rect x="0" y="6" width="2" height="4" fill="#888"/><rect x="14" y="6" width="2" height="4" fill="#666"/><rect x="3" y="3" width="10" height="10" fill="#222"/><rect x="4" y="4" width="8" height="8" fill="#ccc"/><rect x="6" y="6" width="4" height="4" fill="#000"/></svg>`;
       }
@@ -1742,14 +1742,19 @@ function setupStartMenu() {
             CMD
           </button>
 
-          <button class="menu-item-btn" onclick="openWindow('win-notepad')">
+          <button class="menu-item-btn" onclick="openWindow('win-changelog')">
             <svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12">
               <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
-              <rect x="1" y="2" width="13" height="12" fill="#ffffff" />
-              <line x1="4" y1="4" x2="11" y2="4" stroke="#0000ff" stroke-width="1.5" />
-              <line x1="4" y1="7" x2="12" y2="7" stroke="#000000" stroke-width="1.5" />
+              <rect x="4" y="4" width="2" height="2" fill="#ff2222" />
+              <rect x="7" y="4.5" width="4" height="1" fill="#000000" />
+              <rect x="4" y="7.5" width="2" height="2" fill="#ff2222" />
+              <rect x="7" y="8" width="4" height="1" fill="#000000" />
+              <rect x="4" y="11" width="2" height="2" fill="#ff2222" />
+              <rect x="7" y="11.5" width="3" height="1" fill="#000000" />
+              <path d="M10,13 L14,9 L15,10 L11,14 Z" fill="#0066ff" />
+              <polygon points="10,13 9,14 10,14" fill="#ffcc00" />
             </svg>
-            Блокнот
+            Changelog
           </button>
 
           <div style="height: 1px; background-color: #333; border-bottom: 1px solid #555; margin: 4px 2px;"></div>
@@ -1996,7 +2001,7 @@ async function initAudioPlayer() {
     "SAMURAI_-_The_Ballad_of_Buck_Ravers.mp3",
     "KNSRK_-_Unwelcome_school_phonk_version.mp3",
     "Toby_Fox_-_Cutie_Mew_Mew_Magic.mp3",
-    "Metal_Gear_Rising_Revengeance_-_It_Has_to_Be_This_Way",
+    "Metal_Gear_Rising_Revengeance_-_It_Has_to_Be_This_Way.mp3",
     "Rezodrone_-_REAKTION.mp3",
     "Icky_Blossoms_-_Cycle.mp3"
   ];
@@ -2182,7 +2187,7 @@ function executeCommand(input) {
     `;
   } else if (cmd === 'about') {
     res.innerHTML = `
-      ShagOS (ShinshilaOS) [Version 17.07.26]<br>
+      ShagOS (ShinshilaOS) [Version 28/07/26]<br>
       Все права спизжены. ©<br>
       Разработка: DanShag.
     `;
@@ -2226,8 +2231,8 @@ function executeSystemDestruction(output) {
   }
 
   const logs = [
-    "Удаление дескрипторов C:\\Windows...",
-    "Очистка C:\\Windows\\System32\\hal.dll... УСПЕШНО",
+    "Удаление дескрипторов C:\\ShagOS...",
+    "Очистка C:\\ShagOS\\nsosikrnl.exe... УСПЕШНО",
     "Удаление профиля пользователя C:\\Users\\DanShag...",
     "Удаление структуры тома NTFS...",
     "КРИТИЧЕСКИЙ СБОЙ: СИСТЕМА ПОВРЕЖДЕНА.",
@@ -2296,9 +2301,9 @@ function runSystemRecovery() {
     "[INFO] Сканирование поврежденных секторов диска...",
     "[INFO] Проверка структуры NTFS: Ошибок нет.",
     "[WARNING] Обнаружено отсутствие 1587 файлов системных ядер.",
-    "[PROCESS] Восстановление файлов ядра Windows 2000...",
-    "[PROCESS] Копирование ядра ntoskrnl.exe...",
-    "[PROCESS] Копирование библиотек hal.dll...",
+    "[PROCESS] Восстановление файлов ядра ShagOS...",
+    "[PROCESS] Копирование ядра nsosikrnl.exe...",
+    "[PROCESS] Копирование библиотек halflife.dll...",
     "[PROCESS] Проверка структуры профиля DanShag...",
     "[INFO] Профиль восстановлен.",
     "[SUCCESS] Проверка файлов целостности: 100%.",

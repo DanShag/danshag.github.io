@@ -1,4 +1,4 @@
-﻿
+
 let startupAudio = null;
 let ambientAudio = null;
 let audioUnlocked = false;
@@ -8,6 +8,33 @@ let notificationTimeout = null;
 let mouseClickAudio = null;
 let lastKeyboardSoundTime = 0;
 
+function isMobileDeviceUserAgent() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS|FxiOS|Tablet|Touch/i.test(ua);
+  const isMacTouch = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+  return isMobileUA || isMacTouch || (isCoarsePointer && window.innerWidth <= 1024);
+}
+
+function getSavedEditionMode() {
+  // Clear old permanent localStorage flags if present
+  try {
+    localStorage.removeItem('danshag_edition_manual');
+    localStorage.removeItem('danshag_edition');
+  } catch(e) {}
+
+  const sessionOverride = sessionStorage.getItem('danshag_edition_session_override');
+  if (sessionOverride === 'desktop' || sessionOverride === 'mobile') {
+    return sessionOverride;
+  }
+
+  // Приоритет №1: Автоопределение устройства
+  return isMobileDeviceUserAgent() ? 'mobile' : 'desktop';
+}
+
+let currentEditionMode = getSavedEditionMode();
+let pendingEditionTarget = null;
 
 const SUPABASE_URL = "https://epvcpkylgqgyevirubhn.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_DkBPR_bs6U7hWfxObPQ95Q_msbwwV-o";
@@ -82,6 +109,7 @@ function applySystemSettings() {
   const baseZoom = systemSettings.stretchScreen ? 1.0 : 1.2;
   const zoomFactor = baseZoom * (scale / 100);
   document.documentElement.style.setProperty('--desktop-zoom', zoomFactor);
+  document.documentElement.style.setProperty('--mobile-zoom', scale / 100);
 
   const scaleInput = document.getElementById('setting-scale-input');
   if (scaleInput) {
@@ -149,6 +177,11 @@ function applySystemSettings() {
     if (welcomeSpan) {
       welcomeSpan.textContent = (systemSettings.nickname && systemSettings.nickname.trim() !== "") ? systemSettings.nickname : "путник";
     }
+    const mobileWelcome = document.getElementById('mobile-welcome-text');
+    if (mobileWelcome) {
+      const nick = (systemSettings.nickname && systemSettings.nickname.trim() !== "") ? systemSettings.nickname : "путник";
+      mobileWelcome.textContent = `Добро пожаловать, ${nick}.`;
+    }
   }
 
 
@@ -201,8 +234,7 @@ function toggleMuteSounds() {
 
 
 function playStartupSound() {
-  if (systemSettings.disableSounds) return;
-  if (startupAudioPlayed) return;
+  if (systemSettings.disableSounds || currentEditionMode === 'mobile' || startupAudioPlayed) return;
 
   if (!startupAudio) {
     startupAudio = new Audio('assets/startup.mp3');
@@ -219,11 +251,13 @@ function playStartupSound() {
 }
 
 function playAmbientSound() {
-
   if (startupAudio) {
     startupAudio.pause();
   }
-  if (systemSettings.disableSounds) return;
+  if (ambientAudio) {
+    ambientAudio.pause();
+  }
+  if (systemSettings.disableSounds || currentEditionMode === 'mobile') return;
   if (!ambientAudio) {
     ambientAudio = new Audio('assets/ambient_hum.mp3');
     ambientAudio.loop = true;
@@ -232,7 +266,7 @@ function playAmbientSound() {
 }
 
 function playMouseClickSound() {
-  if (systemSettings.disableSounds || !audioUnlocked) return;
+  if (systemSettings.disableSounds || !audioUnlocked || currentEditionMode === 'mobile') return;
   if (!mouseClickAudio) {
     mouseClickAudio = new Audio('assets/clickmouse.mp3');
   }
@@ -241,7 +275,7 @@ function playMouseClickSound() {
 }
 
 function playKeyboardClickSound() {
-  if (systemSettings.disableSounds || !audioUnlocked) return;
+  if (systemSettings.disableSounds || !audioUnlocked || currentEditionMode === 'mobile') return;
 
   const now = Date.now();
   if (now - lastKeyboardSoundTime < 65) {
@@ -255,6 +289,11 @@ function playKeyboardClickSound() {
 
 
 function startSystemBoot() {
+  if (currentEditionMode === 'mobile') {
+    startMobileBoot();
+    return;
+  }
+
   const bootScreen = document.getElementById('boot-screen');
 
   if (systemSettings.disableBoot) {
@@ -323,6 +362,39 @@ function startSystemBoot() {
   setTimeout(printNextLine, 500);
 }
 
+function onSystemReady() {
+  const mobileBoot = document.getElementById('mobile-boot-screen');
+  const pcBoot = document.getElementById('boot-screen');
+  const osLoading = document.getElementById('os-loading');
+
+  if (mobileBoot) mobileBoot.style.display = 'none';
+  if (pcBoot) pcBoot.style.display = 'none';
+  if (osLoading) osLoading.style.display = 'none';
+
+  if (currentEditionMode === 'mobile') {
+    const mobileTilesContainer = document.getElementById('mobile-tiles-container');
+    if (mobileTilesContainer) {
+      mobileTilesContainer.style.display = 'flex';
+    }
+    const whoamiWin = document.getElementById('win-whoami');
+    if (whoamiWin) {
+      whoamiWin.style.display = 'none';
+    }
+    if (openWindowsState && openWindowsState['win-whoami']) {
+      openWindowsState['win-whoami'].open = false;
+    }
+  } else {
+    playAmbientSound();
+    if (openWindowsState && openWindowsState['win-whoami'] && openWindowsState['win-whoami'].open) {
+      const whoamiWin = document.getElementById('win-whoami');
+      if (whoamiWin) {
+        whoamiWin.style.display = 'flex';
+        focusWindow('win-whoami');
+      }
+    }
+  }
+}
+
 function fadeOutBootScreen() {
   const bootScreen = document.getElementById('boot-screen');
   const osLoading = document.getElementById('os-loading');
@@ -337,20 +409,177 @@ function fadeOutBootScreen() {
       }
       onSystemReady();
     }, 800);
+  } else {
+    onSystemReady();
   }
 }
 
 function handleSkipBoot() {
+  if (startupAudio) {
+    startupAudio.pause();
+    startupAudio.currentTime = 0;
+  }
+  startupAudioPlayed = true;
+
   const bootScreen = document.getElementById('boot-screen');
   const osLoading = document.getElementById('os-loading');
-  if (bootScreen) {
-    bootScreen.style.display = 'none';
-  }
-  if (osLoading) {
-    osLoading.style.display = 'none';
-  }
-  playAmbientSound();
+  const mobileBoot = document.getElementById('mobile-boot-screen');
+  const mobileIntroStage = document.getElementById('mobile-intro-stage');
+
+  if (bootScreen) bootScreen.style.display = 'none';
+  if (osLoading) osLoading.style.display = 'none';
+  if (mobileBoot) mobileBoot.style.display = 'none';
+  if (mobileIntroStage) mobileIntroStage.style.display = 'none';
+
   onSystemReady();
+}
+
+function startMobileBoot() {
+  const mobileBoot = document.getElementById('mobile-boot-screen');
+  if (mobileBoot) mobileBoot.style.display = 'none';
+
+  const mobileTilesContainer = document.getElementById('mobile-tiles-container');
+  const mobileStatusBar = document.getElementById('mobile-status-bar');
+
+  if (systemSettings.disableBoot) {
+    if (mobileStatusBar) {
+      mobileStatusBar.style.display = 'flex';
+      mobileStatusBar.style.opacity = '1';
+    }
+    if (mobileTilesContainer) {
+      mobileTilesContainer.style.display = 'flex';
+    }
+    document.body.classList.add('step-tiles', 'step-fade-bg');
+    onSystemReady();
+    return;
+  }
+
+  if (mobileTilesContainer) {
+    mobileTilesContainer.style.display = 'flex';
+    document.body.classList.add('mobile-booting', 'step-start');
+
+    // Шаг 1: Спуск первой строки "Добро пожаловать" (t = 100ms)
+    setTimeout(() => {
+      document.body.classList.add('step-text1');
+    }, 100);
+
+    // Шаг 2: Подъем второй строки "Я DanShag" (t = 900ms)
+    setTimeout(() => {
+      document.body.classList.add('step-text2');
+    }, 900);
+
+    // Шаг 3: Текст уменьшается и плавно съезжает на свое место в шапку (t = 2000ms)
+    setTimeout(() => {
+      document.body.classList.add('step-glide-header');
+    }, 2000);
+
+    // Шаг 4: Пиксельное лого DS выезжает слева от текста (t = 2900ms)
+    setTimeout(() => {
+      document.body.classList.add('step-ds-logo');
+    }, 2900);
+
+    // Шаг 5: Плитки плавно въезжают (t = 3700ms)
+    setTimeout(() => {
+      document.body.classList.add('step-tiles');
+      if (mobileTilesContainer) mobileTilesContainer.classList.add('mobile-tiles-active');
+    }, 3700);
+
+    // Шаг 6: Фон, статус бар и линия под шапкой проявляются (Fade In) в течение 2 секунд (t = 4600ms)
+    setTimeout(() => {
+      if (mobileStatusBar) mobileStatusBar.style.display = 'flex';
+      document.body.classList.add('step-fade-bg');
+    }, 4600);
+
+    // Шаг 7: Завершение инициализации и снятие классов временного бута (t = 6700ms)
+    setTimeout(() => {
+      document.body.classList.remove('mobile-booting', 'step-start', 'step-text1', 'step-text2', 'step-glide-header', 'step-ds-logo');
+      onSystemReady();
+    }, 6700);
+  } else {
+    if (mobileStatusBar) mobileStatusBar.style.display = 'flex';
+    if (mobileTilesContainer) {
+      mobileTilesContainer.style.display = 'flex';
+    }
+    document.body.classList.add('step-tiles', 'step-fade-bg');
+    onSystemReady();
+  }
+}
+
+function applyEditionMode(mode) {
+  if (!mode) mode = getSavedEditionMode();
+  currentEditionMode = mode;
+
+  const body = document.body;
+  const mobileStatusBar = document.getElementById('mobile-status-bar');
+  const mobileTilesContainer = document.getElementById('mobile-tiles-container');
+  const pcBtn = document.getElementById('btn-edition-pc');
+  const mobileBtn = document.getElementById('btn-edition-mobile');
+  const whoamiWin = document.getElementById('win-whoami');
+
+  if (mode === 'mobile') {
+    body.classList.add('mobile-mode');
+    const scale = systemSettings.desktopScale || 100;
+    document.documentElement.style.setProperty('--mobile-zoom', scale / 100);
+
+    if (ambientAudio) ambientAudio.pause();
+    if (startupAudio) startupAudio.pause();
+
+    if (mobileStatusBar) mobileStatusBar.style.display = 'flex';
+    if (mobileTilesContainer) mobileTilesContainer.style.display = 'flex';
+
+    // В мобильной версии окно "Кто ты?" не открывается автоматически
+    if (openWindowsState && openWindowsState['win-whoami']) {
+      openWindowsState['win-whoami'].open = false;
+    }
+    if (whoamiWin) {
+      whoamiWin.style.display = 'none';
+    }
+
+    if (pcBtn) pcBtn.disabled = false;
+    if (mobileBtn) mobileBtn.disabled = true;
+  } else {
+    body.classList.remove('mobile-mode');
+    if (mobileStatusBar) mobileStatusBar.style.display = 'none';
+    if (mobileTilesContainer) mobileTilesContainer.style.display = 'none';
+
+    if (pcBtn) pcBtn.disabled = true;
+    if (mobileBtn) mobileBtn.disabled = false;
+  }
+}
+
+function promptSwitchEdition(targetMode) {
+  if (targetMode === currentEditionMode) return;
+  pendingEditionTarget = targetMode;
+
+  const modalText = document.getElementById('edition-modal-text');
+  if (modalText) {
+    modalText.textContent = `Вы действительно хотите переключиться на ${targetMode === 'mobile' ? 'Мобильное' : 'Компьютерное'} издание сайта?`;
+  }
+  const overlay = document.getElementById('edition-modal-overlay');
+  if (overlay) {
+    overlay.style.display = 'flex';
+  }
+}
+
+function closeEditionModal() {
+  const overlay = document.getElementById('edition-modal-overlay');
+  if (overlay) {
+    overlay.style.display = 'none';
+  }
+  pendingEditionTarget = null;
+}
+
+function confirmSwitchEdition() {
+  if (pendingEditionTarget) {
+    sessionStorage.setItem('danshag_edition_session_override', pendingEditionTarget);
+    try {
+      localStorage.removeItem('danshag_edition_manual');
+      localStorage.removeItem('danshag_edition');
+      setCookie('danshag_edition', '', -1);
+    } catch(e) {}
+    closeEditionModal();
+    location.reload();
+  }
 }
 
 
@@ -470,6 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadSystemSettings();
   applySystemSettings();
+  applyEditionMode();
 
   const introScreen = document.getElementById('intro-screen');
   const introText = document.getElementById('intro-text');
@@ -477,14 +707,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let visitCount = parseInt(getCookie('danshag_visits') || '0', 10);
   visitCount++;
   setCookie('danshag_visits', visitCount, 365);
-
-
-  loadNotepadContent();
-  document.getElementById('btn-save-notepad').addEventListener('click', saveNotepadContent);
-  document.getElementById('notepad-textarea').addEventListener('input', () => {
-
-    setCookie('danshag_notepad', encodeURIComponent(document.getElementById('notepad-textarea').value), 30);
-  });
 
 
   initAudioPlayer();
@@ -747,11 +969,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateClock() {
   const clockEl = document.getElementById('system-clock');
-  if (!clockEl) return;
+  const mobileClockEl = document.getElementById('mobile-clock');
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
-  clockEl.textContent = `${hours}:${minutes}`;
+  const timeStr = `${hours}:${minutes}`;
+
+  if (clockEl) clockEl.textContent = timeStr;
+  if (mobileClockEl) mobileClockEl.textContent = timeStr;
 }
 
 
@@ -1206,11 +1431,12 @@ const openWindowsState = {
   'win-config': { open: false, minimized: false, title: 'Девайсы/Конфиг', icon: 'pc' },
   'win-player': { open: false, minimized: false, title: 'Плеер', icon: 'player' },
   'win-cmd': { open: false, minimized: false, title: 'CMD', icon: 'cmd' },
-  'win-notepad': { open: false, minimized: false, title: 'Блокнот', icon: 'notepad' },
+  'win-changelog': { open: false, minimized: false, title: 'Changelog', icon: 'changelog' },
   'win-settings': { open: false, minimized: false, title: 'Панель управления', icon: 'settings' }
 };
 
 function focusWindow(id) {
+  if (id === 'win-notepad') id = 'win-changelog';
   const win = document.getElementById(id);
   if (!win) return;
 
@@ -1233,33 +1459,42 @@ function focusWindow(id) {
 }
 
 function openWindow(id) {
+  if (id === 'win-notepad') id = 'win-changelog';
   const win = document.getElementById(id);
   if (!win) return;
 
   win.style.display = 'flex';
-  openWindowsState[id].open = true;
-  openWindowsState[id].minimized = false;
+  if (openWindowsState[id]) {
+    openWindowsState[id].open = true;
+    openWindowsState[id].minimized = false;
+  }
 
   focusWindow(id);
 }
 
 function closeWindow(id) {
+  if (id === 'win-notepad') id = 'win-changelog';
   const win = document.getElementById(id);
   if (!win) return;
 
   win.style.display = 'none';
-  openWindowsState[id].open = false;
-  openWindowsState[id].minimized = false;
+  if (openWindowsState[id]) {
+    openWindowsState[id].open = false;
+    openWindowsState[id].minimized = false;
+  }
 
   renderTaskbar();
 }
 
 function minimizeWindow(id) {
+  if (id === 'win-notepad') id = 'win-changelog';
   const win = document.getElementById(id);
   if (!win) return;
 
   win.style.display = 'none';
-  openWindowsState[id].minimized = true;
+  if (openWindowsState[id]) {
+    openWindowsState[id].minimized = true;
+  }
 
 
   win.classList.remove('window-active');
@@ -1329,10 +1564,10 @@ function renderTaskbar() {
         iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="3" y="2" width="10" height="2" fill="#d4af37" /><rect x="2" y="4" width="2" height="8" fill="#d4af37" /><rect x="12" y="4" width="2" height="8" fill="#d4af37" /></svg>`;
       } else if (state.icon === 'cmd') {
         iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="1" y="1" width="14" height="14" fill="#000"/><path d="M4,4 L7,6 L4,8" stroke="#00ff00" stroke-width="1" fill="none" /></svg>`;
-      } else if (state.icon === 'notepad') {
-        iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="2" y="1" width="11" height="14" fill="#fff" stroke="#000" /></svg>`;
+      } else if (state.icon === 'changelog') {
+        iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="2" y="1" width="12" height="14" fill="#fff"/><rect x="3" y="4" width="2" height="2" fill="#00aa00"/><rect x="6" y="4" width="6" height="1" fill="#000"/><rect x="3" y="7.5" width="2" height="2" fill="#00aa00"/><rect x="6" y="7.5" width="7" height="1" fill="#000"/></svg>`;
       } else if (state.icon === 'settings') {
-        iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="4" y="4" width="8" height="8" fill="#fff" /></svg>`;
+        iconSvg = `<svg class="pixel-icon" viewBox="0 0 16 16" width="12" height="12"><rect x="6" y="0" width="4" height="2" fill="#aaa"/><rect x="6" y="14" width="4" height="2" fill="#555"/><rect x="0" y="6" width="2" height="4" fill="#888"/><rect x="14" y="6" width="2" height="4" fill="#666"/><rect x="3" y="3" width="10" height="10" fill="#222"/><rect x="4" y="4" width="8" height="8" fill="#ccc"/><rect x="6" y="6" width="4" height="4" fill="#000"/></svg>`;
       }
 
       btn.innerHTML = `${iconSvg}<span>${state.title}</span>`;
@@ -1435,7 +1670,7 @@ function setupStartMenu() {
 
 
   const startMenu = document.createElement('div');
-  startMenu.className = 'window';
+  startMenu.className = 'pc-start-menu';
   startMenu.id = 'start-menu';
   startMenu.style.cssText = `
     display: none;
@@ -1821,18 +2056,31 @@ function renderPlaylist() {
   });
 }
 
+function updateMobileMusicNote() {
+  const note = document.getElementById('mobile-music-note');
+  if (!note) return;
+  if (window.audioPlayerInstance && !window.audioPlayerInstance.paused) {
+    note.style.display = 'inline-block';
+  } else {
+    note.style.display = 'none';
+  }
+}
+
 function playTrack(index) {
   if (index < 0 || index >= window.playerPlaylist.length) return;
   window.playerCurrentIndex = index;
 
   const trackName = window.playerPlaylist[index];
   window.audioPlayerInstance.src = `./assets/music/${trackName}`;
-  window.audioPlayerInstance.play().catch(e => console.log("Ошибка воспроизведения:", e));
+  window.audioPlayerInstance.play()
+    .then(() => updateMobileMusicNote())
+    .catch(e => console.log("Ошибка воспроизведения:", e));
 
   document.getElementById('player-track-title').textContent = trackName.replace(/\.[^/.]+$/, "");
   document.getElementById('player-play').textContent = '⏸';
 
   renderPlaylist();
+  updateMobileMusicNote();
 }
 
 function togglePlay() {
@@ -1843,13 +2091,14 @@ function togglePlay() {
   }
 
   if (window.audioPlayerInstance.paused) {
-    window.audioPlayerInstance.play();
+    window.audioPlayerInstance.play().then(() => updateMobileMusicNote());
     document.getElementById('player-play').textContent = '⏸';
   } else {
     window.audioPlayerInstance.pause();
     document.getElementById('player-play').textContent = '▶';
   }
   renderPlaylist();
+  updateMobileMusicNote();
 }
 
 function stopTrack() {
@@ -1857,6 +2106,7 @@ function stopTrack() {
   window.audioPlayerInstance.currentTime = 0;
   document.getElementById('player-play').textContent = '▶';
   renderPlaylist();
+  updateMobileMusicNote();
 }
 
 function prevTrack() {

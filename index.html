@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 
 <head>
@@ -30,7 +30,29 @@
       <div class="desktop-wallpaper"></div>
 
       <div id="desktop-container">
-        <!-- Экран загрузки системы (BIOS + OS Boot) -->
+        <!-- Верхняя статус-панель для мобильной версии -->
+        <div id="mobile-status-bar" class="mobile-status-bar" style="display: none;">
+          <div class="mobile-status-left">
+            <span id="mobile-music-note" class="mobile-music-note" style="display: none;" onclick="openWindow('win-player')" title="Открыть плеер">🎵</span>
+          </div>
+          <div class="mobile-status-center">
+            <span id="mobile-clock">00:00</span>
+          </div>
+          <div class="mobile-status-right">
+            <svg class="pixel-icon wifi-icon" viewBox="0 0 20 12" width="16" height="10" style="filter: drop-shadow(0 0 3px #00ff00);">
+              <path d="M 1 2 Q 10 -2 19 2" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="square" />
+              <path d="M 4 5 Q 10 2 16 5" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="square" />
+              <path d="M 7 8 Q 10 6 13 8" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="square" />
+              <rect x="9" y="10" width="2" height="2" fill="#00ff00" />
+            </svg>
+          </div>
+        </div>
+
+
+
+        <!-- Экран загрузки системы (BIOS + OS Boot для ПК) -->
+
+        <!-- Экран загрузки системы (BIOS + OS Boot для ПК) -->
         <div id="boot-screen" style="display: none;">
           <div class="bios-brand-header">
             <svg class="bios-logo-svg" viewBox="0 0 100 60" width="80" height="48">
@@ -152,18 +174,182 @@
                 <span class="icon-label">CMD</span>
               </button>
 
-              <!-- Иконка: Блокнот -->
-              <button class="desktop-icon" id="icon-notepad" onclick="openWindow('win-notepad')">
+              <!-- Иконка: Changelog -->
+              <button class="desktop-icon" id="icon-changelog" onclick="openWindow('win-changelog')">
                 <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
-                  <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
-                  <rect x="1" y="2" width="13" height="12" fill="#ffffff" />
-                  <line x1="4" y1="4" x2="11" y2="4" stroke="#0000ff" stroke-width="1" />
-                  <line x1="4" y1="7" x2="12" y2="7" stroke="#000" stroke-width="1" />
-                  <line x1="4" y1="10" x2="9" y2="10" stroke="#000" stroke-width="1" />
+                  <rect x="2" y="1" width="12" height="14" fill="#ffffff" />
+                  <rect x="3" y="4" width="2" height="2" fill="#00aa00" />
+                  <rect x="6" y="4" width="6" height="1.5" fill="#000000" />
+                  <rect x="3" y="7.5" width="2" height="2" fill="#00aa00" />
+                  <rect x="6" y="7.5" width="7" height="1.5" fill="#000000" />
+                  <rect x="3" y="11" width="2" height="2" fill="#00aa00" />
+                  <rect x="6" y="11" width="5" height="1.5" fill="#000000" />
                 </svg>
-                <span class="icon-label">Блокнот</span>
+                <span class="icon-label">Changelog</span>
               </button>
 
+            </div>
+          </div>
+
+          <!-- Мобильный рабочий стол с плитками Windows Phone 2000 -->
+          <div id="mobile-tiles-container" class="mobile-tiles-container" style="display: none;">
+            <div class="mobile-tiles-header">
+              <div class="mobile-header-brand">
+                <div class="mobile-ds-logo">
+                  <svg class="ds-pixel-art-logo" viewBox="0 0 40 40" width="54" height="54" style="shape-rendering: crispEdges; filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));">
+                    <defs>
+                      <linearGradient id="dsPixelSilverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ffffff" />
+                        <stop offset="50%" stop-color="#e0e0e0" />
+                        <stop offset="100%" stop-color="#999999" />
+                      </linearGradient>
+                    </defs>
+                    <!-- Letter D (Top Left) -->
+                    <path d="M 4 4 H 18 V 8 H 22 V 20 H 18 V 24 H 4 Z M 9 9 V 19 H 14 V 16 H 17 V 12 H 14 V 9 Z" fill="url(#dsPixelSilverGrad)" />
+                    <!-- Letter S (Bottom Right Interlocking) -->
+                    <path d="M 16 16 H 32 V 20 H 21 V 23 H 32 V 35 H 16 V 31 H 27 V 28 H 16 Z" fill="url(#dsPixelSilverGrad)" />
+                  </svg>
+                </div>
+                <div class="mobile-welcome-box">
+                  <div id="mobile-welcome-text" class="mobile-welcome-text">Добро пожаловать, путник.</div>
+                  <div class="mobile-subwelcome">Я <span style="color: #ffff00; font-weight: bold;">DanShag</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="mobile-tiles-grid">
+              <!-- Плитка: Кто ты? -->
+              <button class="mobile-tile tile-green" onclick="openWindow('win-whoami')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="1" y="3" width="2" height="10" fill="#00ff00" />
+                    <rect x="3" y="3" width="4" height="2" fill="#00ff00" />
+                    <rect x="3" y="11" width="4" height="2" fill="#00ff00" />
+                    <rect x="7" y="5" width="2" height="6" fill="#00ff00" />
+                    <rect x="10" y="3" width="5" height="2" fill="#00ff00" />
+                    <rect x="10" y="5" width="2" height="2" fill="#00ff00" />
+                    <rect x="10" y="7" width="5" height="2" fill="#00ff00" />
+                    <rect x="13" y="9" width="2" height="2" fill="#00ff00" />
+                    <rect x="10" y="11" width="5" height="2" fill="#00ff00" />
+                  </svg>
+                </div>
+                <span class="tile-label">Кто ты?</span>
+              </button>
+
+              <!-- Плитка: Проекты -->
+              <button class="mobile-tile tile-blue" onclick="openWindow('win-projects')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="2" y="2" width="12" height="12" fill="#000080" />
+                    <rect x="3" y="3" width="10" height="10" fill="#0000ff" />
+                    <rect x="4" y="2" width="6" height="4" fill="#c0c0c0" />
+                    <rect x="5" y="3" width="2" height="2" fill="#fff" />
+                    <rect x="4" y="8" width="8" height="5" fill="#ffffff" />
+                    <rect x="5" y="9" width="6" height="1" fill="#ff0000" />
+                    <rect x="5" y="11" width="6" height="1" fill="#0000ff" />
+                  </svg>
+                </div>
+                <span class="tile-label">Проекты</span>
+              </button>
+
+              <!-- Плитка: Девайсы -->
+              <button class="mobile-tile tile-red" onclick="openWindow('win-config')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="1" y="1" width="12" height="9" fill="#808080" />
+                    <rect x="2" y="2" width="10" height="7" fill="#c0c0c0" />
+                    <rect x="3" y="3" width="8" height="5" fill="#000000" />
+                    <rect x="4" y="4" width="2" height="2" fill="#00ffff" />
+                    <rect x="6" y="10" width="2" height="2" fill="#808080" />
+                    <rect x="4" y="12" width="6" height="1" fill="#808080" />
+                    <rect x="12" y="4" width="3" height="9" fill="#808080" />
+                    <rect x="13" y="5" width="1" height="1" fill="#000000" />
+                    <rect x="13" y="7" width="1" height="1" fill="#00ff00" />
+                  </svg>
+                </div>
+                <span class="tile-label">Девайсы</span>
+              </button>
+
+              <!-- Плитка: Плеер -->
+              <button class="mobile-tile tile-gold" onclick="openWindow('win-player')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="3" y="2" width="10" height="2" fill="#d4af37" />
+                    <rect x="2" y="4" width="2" height="8" fill="#d4af37" />
+                    <rect x="12" y="4" width="2" height="8" fill="#d4af37" />
+                    <rect x="1" y="9" width="4" height="4" fill="#00ffcc" />
+                    <rect x="11" y="9" width="4" height="4" fill="#00ffcc" />
+                  </svg>
+                </div>
+                <span class="tile-label">Плеер</span>
+              </button>
+
+              <!-- Плитка: CMD -->
+              <button class="mobile-tile tile-dark" onclick="openWindow('win-cmd')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="1" y="1" width="14" height="14" fill="#000000" />
+                    <rect x="2" y="2" width="12" height="12" fill="#111111" stroke="#333" stroke-width="1" />
+                    <path d="M4,4 L7,6 L4,8" stroke="#00ff00" stroke-width="1" fill="none" />
+                    <line x1="8" y1="8" x2="11" y2="8" stroke="#00ff00" stroke-width="1.5" />
+                  </svg>
+                </div>
+                <span class="tile-label">CMD</span>
+              </button>
+
+              <!-- Плитка: Changelog -->
+              <button class="mobile-tile tile-cyan" onclick="openWindow('win-changelog')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="2" y="1" width="12" height="14" fill="#ffffff" />
+                    <rect x="3" y="4" width="2" height="2" fill="#00aa00" />
+                    <rect x="6" y="4" width="6" height="1.5" fill="#000000" />
+                    <rect x="3" y="7.5" width="2" height="2" fill="#00aa00" />
+                    <rect x="6" y="7.5" width="7" height="1.5" fill="#000000" />
+                    <rect x="3" y="11" width="2" height="2" fill="#00aa00" />
+                    <rect x="6" y="11" width="5" height="1.5" fill="#000000" />
+                  </svg>
+                </div>
+                <span class="tile-label">Changelog</span>
+              </button>
+
+              <!-- Плитка: Гостевуха -->
+              <button class="mobile-tile tile-purple" onclick="openWindow('win-guestbook')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="2" y="1" width="10" height="14" rx="1" fill="#c0c0c0" stroke="#000" stroke-width="1" />
+                    <rect x="3" y="2" width="8" height="12" fill="#ffffff" />
+                    <rect x="1" y="3" width="2" height="1" fill="#808080" />
+                    <rect x="1" y="6" width="2" height="1" fill="#808080" />
+                    <line x1="5" y1="4" x2="9" y2="4" stroke="#000" stroke-width="1" />
+                    <line x1="5" y1="7" x2="9" y2="7" stroke="#000" stroke-width="1" />
+                  </svg>
+                </div>
+                <span class="tile-label">Гостевуха</span>
+              </button>
+
+              <!-- Плитка: Настройки -->
+              <button class="mobile-tile tile-gray" onclick="openWindow('win-settings')">
+                <div class="tile-icon-wrapper">
+                  <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="36" height="36">
+                    <rect x="6" y="0" width="4" height="2" fill="#aaaaaa" />
+                    <rect x="6" y="14" width="4" height="2" fill="#555555" />
+                    <rect x="0" y="6" width="2" height="4" fill="#888888" />
+                    <rect x="14" y="6" width="2" height="4" fill="#666666" />
+                    <rect x="2" y="2" width="3" height="3" fill="#999999" />
+                    <rect x="11" y="2" width="3" height="3" fill="#888888" />
+                    <rect x="2" y="11" width="3" height="3" fill="#666666" />
+                    <rect x="11" y="11" width="3" height="3" fill="#444444" />
+                    <rect x="3" y="3" width="10" height="10" fill="#222226" />
+                    <rect x="4" y="4" width="8" height="8" fill="#cccccc" />
+                    <rect x="5" y="5" width="6" height="6" fill="#777777" />
+                    <rect x="5" y="5" width="6" height="1" fill="#e0e0e0" />
+                    <rect x="5" y="5" width="1" height="6" fill="#e0e0e0" />
+                    <rect x="6" y="6" width="4" height="4" fill="#0c0c10" />
+                    <rect x="7" y="7" width="2" height="2" fill="#000000" />
+                  </svg>
+                </div>
+                <span class="tile-label">Настройки</span>
+              </button>
             </div>
           </div>
 
@@ -769,29 +955,53 @@
             </div>
           </div>
 
-          <!-- ================= ОКНО: БЛОКНОТ ================= -->
-          <div class="window" id="win-notepad" style="top: 30%; left: 30%; display: none;">
+          <!-- ================= ОКНО: CHANGELOG ================= -->
+          <div class="window" id="win-changelog" style="top: 25%; left: 25%; display: none; width: 480px;">
             <div class="window-header">
               <div class="window-title-container">
                 <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
-                  <rect x="2" y="1" width="11" height="14" fill="#ffffff" />
-                  <rect x="1" y="2" width="13" height="12" fill="#ffffff" />
-                  <line x1="4" y1="4" x2="11" y2="4" stroke="#0000ff" stroke-width="1.5" />
-                  <line x1="4" y1="7" x2="12" y2="7" stroke="#000000" stroke-width="1.5" />
-                  <line x1="4" y1="10" x2="9" y2="10" stroke="#000000" stroke-width="1.5" />
+                  <rect x="2" y="1" width="12" height="14" fill="#ffffff" />
+                  <rect x="3" y="4" width="2" height="2" fill="#00aa00" />
+                  <rect x="6" y="4" width="6" height="1" fill="#000000" />
+                  <rect x="3" y="7.5" width="2" height="2" fill="#00aa00" />
+                  <rect x="6" y="7.5" width="7" height="1" fill="#000000" />
+                  <rect x="3" y="11" width="2" height="2" fill="#00aa00" />
+                  <rect x="6" y="11" width="5" height="1" fill="#000000" />
                 </svg>
-                <span class="window-title">Безымянный - Блокнот</span>
+                <span class="window-title">Changelog - История изменений</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn btn-minimize" onclick="minimizeWindow('win-notepad')">_</button>
-                <button class="win-btn btn-close" onclick="closeWindow('win-notepad')">X</button>
+                <button class="win-btn btn-minimize" onclick="minimizeWindow('win-changelog')">_</button>
+                <button class="win-btn btn-close" onclick="closeWindow('win-changelog')">X</button>
               </div>
             </div>
-            <div class="window-body notepad-window-body">
-              <textarea id="notepad-textarea" placeholder="Напишите здесь свои мысли..."></textarea>
-              <div class="notepad-footer">
-                <button class="btn-retro" id="btn-save-notepad">Сохранить</button>
-                <span id="notepad-status-msg" style="font-size: 8px; color: #888; margin-left: 8px;"></span>
+            <div class="window-body changelog-window-body">
+              <h1 class="changelog-main-title">Changelog</h1>
+              <div class="changelog-container">
+
+                <!-- ДЛЯ ДОБАВЛЕНИЯ НОВОЙ ВЕРСИИ СКОПИРУЙТЕ И ВСТАВЬТЕ БЛОК НИЖЕ:
+                <div class="changelog-entry">
+                  <h3 class="changelog-version">Версия от [ДАТА]</h3>
+                  <ul class="changelog-list">
+                    <li>‣   [ИЗМЕНЕНИЕ 1]</li>
+                    <li>‣   [ИЗМЕНЕНИЕ 2]</li>
+                  </ul>
+                </div>
+                -->
+
+                <div class="changelog-entry">
+                  <h3 class="changelog-version">Версия от 27 июля 2026 года</h3>
+                  <ul class="changelog-list">
+                    <li>‣   Реализована полноценная адаптивная мобильная версия в стиле Windows Phone 2000</li>
+                    <li>‣   Внедрена удобная плиточная система приложений с пиксельными иконками по центру</li>
+                    <li>‣   Создан экран загрузки "Shinshilin Phone" с прогресс-баром под текстом</li>
+                    <li>‣   Заменено приложение «Блокнот» на «Changelog» для просмотра истории обновлений</li>
+                    <li>‣   Обновлена иконка настроек на аккуратную пиксельную шестерёнку</li>
+                    <li>‣   Добавлена функциональность переключения изданий (Компьютерное / Мобильное) с затемнением и подтверждением</li>
+                    <li>‣   Верхняя строка уведомлений телефона с часами и иконкой воспроизведения музыки 🎵</li>
+                  </ul>
+                </div>
+
               </div>
             </div>
           </div>
@@ -801,7 +1011,21 @@
             <div class="window-header">
               <div class="window-title-container">
                 <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
-                  <rect x="4" y="4" width="8" height="8" fill="#fff" />
+                  <rect x="6" y="0" width="4" height="2" fill="#aaaaaa" />
+                  <rect x="6" y="14" width="4" height="2" fill="#555555" />
+                  <rect x="0" y="6" width="2" height="4" fill="#888888" />
+                  <rect x="14" y="6" width="2" height="4" fill="#666666" />
+                  <rect x="2" y="2" width="3" height="3" fill="#999999" />
+                  <rect x="11" y="2" width="3" height="3" fill="#888888" />
+                  <rect x="2" y="11" width="3" height="3" fill="#666666" />
+                  <rect x="11" y="11" width="3" height="3" fill="#444444" />
+                  <rect x="3" y="3" width="10" height="10" fill="#222226" />
+                  <rect x="4" y="4" width="8" height="8" fill="#cccccc" />
+                  <rect x="5" y="5" width="6" height="6" fill="#777777" />
+                  <rect x="5" y="5" width="6" height="1" fill="#e0e0e0" />
+                  <rect x="5" y="5" width="1" height="6" fill="#e0e0e0" />
+                  <rect x="6" y="6" width="4" height="4" fill="#0c0c10" />
+                  <rect x="7" y="7" width="2" height="2" fill="#000000" />
                 </svg>
                 <span class="window-title">Панель управления</span>
               </div>
@@ -835,15 +1059,15 @@
                         <input type="checkbox" id="setting-disable-boot" class="retro-checkbox">
                         <span>Отключить симуляцию запуска</span>
                       </label>
-                      <label class="settings-checkbox-container">
+                      <label class="settings-checkbox-container desktop-only-setting">
                         <input type="checkbox" id="setting-stretch-screen" class="retro-checkbox">
                         <span>Растянуть на весь экран [WIP]</span>
                       </label>
-                      <label class="settings-checkbox-container">
+                      <label class="settings-checkbox-container desktop-only-setting">
                         <input type="checkbox" id="setting-remove-outer-bg" class="retro-checkbox">
                         <span>Убрать фон</span>
                       </label>
-                      <label class="settings-checkbox-container">
+                      <label class="settings-checkbox-container desktop-only-setting">
                         <input type="checkbox" id="setting-remove-wallpaper" class="retro-checkbox">
                         <span>Убрать обои</span>
                       </label>
@@ -854,7 +1078,7 @@
                     </div>
                   </div>
 
-                  <div class="info-block block-yellow-shimmer"
+                  <div class="info-block block-yellow-shimmer desktop-only-setting"
                     style="position: relative; overflow: hidden; margin-bottom: 0;">
                     <h3 class="subsection-title">Смена обоев рабочего стола</h3>
                     <div class="block-content"
@@ -875,12 +1099,12 @@
                 </div>
 
                 <div class="settings-column-right">
-                  <div class="info-block block-green" style="height: 100%; box-sizing: border-box; margin-bottom: 0;">
+                  <div class="info-block block-green" style="box-sizing: border-box; margin-bottom: 10px;">
                     <h3 class="subsection-title">Масштаб</h3>
                     <div class="block-content"
                       style="display: flex; flex-direction: column; gap: 10px; padding: 4px 0;">
                       <span style="font-size: 9.5px; color: #bbb; line-height: 1.3;">Изменение масштаба элементов
-                        рабочего стола (окна, иконки, панель задач).</span>
+                        рабочего стола.</span>
                       <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
                         <button class="btn-retro" id="setting-scale-down" style="width: 22px; padding: 2px;">◀</button>
                         <input type="text" id="setting-scale-input" value="100"
@@ -893,6 +1117,19 @@
                         от 70 до 150</span>
                     </div>
                   </div>
+
+                  <!-- Раздел издания сайта ниже масштаба -->
+                  <div class="info-block block-purple" style="box-sizing: border-box; margin-bottom: 0;">
+                    <h3 class="subsection-title">ИЗДАНИЕ САЙТА</h3>
+                    <div class="block-content" style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0;">
+                      <span style="font-size: 9.5px; color: #bbb; line-height: 1.3;">Переключение интерфейса сайта:</span>
+                      <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <button class="btn-retro" id="btn-edition-pc" onclick="promptSwitchEdition('desktop')" style="width: 100%; font-size: 10px; padding: 5px;">Компьютерное</button>
+                        <button class="btn-retro" id="btn-edition-mobile" onclick="promptSwitchEdition('mobile')" style="width: 100%; font-size: 10px; padding: 5px;">Мобильное</button>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
@@ -934,18 +1171,21 @@
           <button class="desktop-icon" id="icon-settings"
             style="position: absolute; bottom: 80px; right: 16px; z-index: 5;" onclick="openWindow('win-settings')">
             <svg class="pixel-icon icon-large" viewBox="0 0 16 16" width="48" height="48">
-              <rect x="7" y="1" width="2" height="14" fill="#00ff00" />
-              <rect x="1" y="7" width="14" height="2" fill="#00ff00" />
-              <rect x="4" y="4" width="8" height="8" fill="#808080" />
-              <rect x="6" y="6" width="4" height="4" fill="#000000" />
-              <rect x="5" y="3" width="2" height="2" fill="#808080" />
-              <rect x="9" y="3" width="2" height="2" fill="#808080" />
-              <rect x="3" y="5" width="2" height="2" fill="#808080" />
-              <rect x="11" y="5" width="2" height="2" fill="#808080" />
-              <rect x="3" y="9" width="2" height="2" fill="#808080" />
-              <rect x="11" y="9" width="2" height="2" fill="#808080" />
-              <rect x="5" y="11" width="2" height="2" fill="#808080" />
-              <rect x="9" y="11" width="2" height="2" fill="#808080" />
+              <rect x="6" y="0" width="4" height="2" fill="#aaaaaa" />
+              <rect x="6" y="14" width="4" height="2" fill="#555555" />
+              <rect x="0" y="6" width="2" height="4" fill="#888888" />
+              <rect x="14" y="6" width="2" height="4" fill="#666666" />
+              <rect x="2" y="2" width="3" height="3" fill="#999999" />
+              <rect x="11" y="2" width="3" height="3" fill="#888888" />
+              <rect x="2" y="11" width="3" height="3" fill="#666666" />
+              <rect x="11" y="11" width="3" height="3" fill="#444444" />
+              <rect x="3" y="3" width="10" height="10" fill="#222226" />
+              <rect x="4" y="4" width="8" height="8" fill="#cccccc" />
+              <rect x="5" y="5" width="6" height="6" fill="#777777" />
+              <rect x="5" y="5" width="6" height="1" fill="#e0e0e0" />
+              <rect x="5" y="5" width="1" height="6" fill="#e0e0e0" />
+              <rect x="6" y="6" width="4" height="4" fill="#0c0c10" />
+              <rect x="7" y="7" width="2" height="2" fill="#000000" />
             </svg>
             <span class="icon-label">Настройки</span>
           </button>
@@ -1015,6 +1255,34 @@
                 </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно смены издания сайта с затемнением фона -->
+  <div id="edition-modal-overlay" class="modal-overlay" style="display: none;">
+    <div class="window edition-modal-window">
+      <div class="window-header">
+        <div class="window-title-container">
+          <svg class="pixel-icon icon-small" viewBox="0 0 16 16" width="16" height="16">
+            <rect x="7" y="0" width="2" height="16" fill="#ffffff" />
+            <rect x="0" y="7" width="16" height="2" fill="#ffffff" />
+            <rect x="2" y="2" width="12" height="12" fill="#ffffff" />
+            <rect x="3" y="3" width="10" height="10" fill="#444444" />
+            <rect x="4" y="4" width="8" height="8" fill="#ffffff" />
+            <rect x="6" y="6" width="4" height="4" fill="#000000" />
+          </svg>
+          <span class="window-title">Смена издания</span>
+        </div>
+      </div>
+      <div class="window-body" style="text-align: center; padding: 16px;">
+        <p id="edition-modal-text" style="font-size: 11px; margin-bottom: 16px; line-height: 1.4; color: #fff; font-family: '8bitoperator', monospace;">
+          Вы действительно хотите переключиться?
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+          <button class="btn-retro" id="edition-modal-confirm-btn" onclick="confirmSwitchEdition()" style="padding: 4px 16px; min-width: 70px;">Да</button>
+          <button class="btn-retro" onclick="closeEditionModal()" style="padding: 4px 16px; min-width: 70px;">Отмена</button>
+        </div>
       </div>
     </div>
   </div>

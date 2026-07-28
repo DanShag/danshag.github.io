@@ -2888,24 +2888,30 @@ body.mobile-mode .settings-columns-container .block-green {
   gap: 14px !important;
 }
 
-/* ASCII Logo styling & smooth dark color cycling */
+/* ASCII Logo styling */
 .ascii-logo-pre {
-  font-family: monospace !important;
+  /* Использование проверенных шрифтов с точным отображением блоков */
+  font-family: Consolas, "Courier New", Courier, monospace !important;
   font-size: 6.5px !important;
-  line-height: 0.92 !important;
+
+  /* Нормализуем высоту строки, чтобы логотип не плющило */
+  line-height: 1 !important;
   letter-spacing: 0px !important;
+
   display: block !important;
   width: fit-content !important;
   margin: 0 auto 16px auto !important;
-  text-align: center !important;
-  overflow: hidden !important;
+
+  /* КРИТИЧЕСКИ ВАЖНО: левое выравнивание внутри блока */
+  text-align: left !important;
+
   white-space: pre !important;
   background: transparent !important;
   border: none !important;
   color: #007799;
   animation: ascii-color-shift 12s infinite linear;
 
-  /* Принудительный сдвиг вверх (меняйте от -30px до -80px) */
+  /* Сдвиг */
   transform: translateY(-60px) !important;
 }
 

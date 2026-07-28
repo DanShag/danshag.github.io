@@ -544,6 +544,11 @@ function applyEditionMode(mode) {
 
     if (pcBtn) pcBtn.disabled = true;
     if (mobileBtn) mobileBtn.disabled = false;
+
+    // Авто-запуск анимации звёзд и вступления при загрузке ПК версии
+    setTimeout(() => {
+      triggerWhoamiIntroAnimation();
+    }, 200);
   }
 }
 
@@ -1469,6 +1474,10 @@ function openWindow(id) {
     openWindowsState[id].minimized = false;
   }
 
+  if (id === 'win-whoami') {
+    triggerWhoamiIntroAnimation();
+  }
+
   focusWindow(id);
 }
 
@@ -2167,12 +2176,19 @@ function executeCommand(input) {
   const output = document.getElementById('cmd-terminal-output');
   if (!output) return;
 
+  const rawCmd = input.trim();
+  const cmd = rawCmd.toLowerCase();
+
+  // Обработка очистки экрана
+  if (cmd === 'cls' || cmd === 'clear') {
+    output.innerHTML = '';
+    return;
+  }
 
   const line = document.createElement('div');
-  line.innerHTML = `<span style="color: #fff;">C:\\&gt;</span> ${input}`;
+  line.innerHTML = `<span style="color: #fff;">C:\\&gt;</span> ${rawCmd}`;
   output.appendChild(line);
 
-  const cmd = input.toLowerCase().trim();
   const res = document.createElement('div');
   res.style.margin = '2px 0 8px 0';
 
@@ -2181,16 +2197,75 @@ function executeCommand(input) {
       Доступные команды:<br>
       - <b style="color: #fff;">help</b>: Вывод списка доступных команд.<br>
       - <b style="color: #fff;">about</b>: О системе DanShag OS.<br>
+      - <b style="color: #fff;">clear / cls</b>: Очистить экран консоли.<br>
+      - <b style="color: #fff;">neofetch</b>: Краткая выжимка о системе.<br>
+      - <b style="color: #fff;">whoami</b>: Информация о вашем устройстве и браузере.<br>
+      - <b style="color: #fff;">matrix</b>: Запустить / выключить матричный дождь.<br>
+      - <b style="color: #fff;">bsod</b>: Спровоцировать Синий Экран Смерти (BSOD).<br>
       - <b style="color: #fff;">exit</b>: Закрыть командную строку.<br>
-      - <b style="color: #fff;">???</b>: ...<br>
       - <b style="color: #ff0000;">Ходят слухи, что это ещё не все команды, которые доступны здесь...</b>
     `;
   } else if (cmd === 'about') {
     res.innerHTML = `
-      ShagOS (ShinshilaOS) [Version 28/07/26]<br>
-      Все права спизжены. ©<br>
-      Разработка: DanShag.
+      ShinshillaOS (DanShag OS) [Version 28.07.2026]<br>
+      Все права сохранены. © DanShag.<br>
+      Специальное веб-издание.
     `;
+  } else if (cmd === 'neofetch' || cmd === 'fetch') {
+    res.innerHTML = `
+      <div style="font-family: monospace; color: #00ffcc; font-size: 11px; line-height: 1.4; margin: 4px 0;">
+        <span style="color:#00ffff; font-weight:bold;">DanShag OS Neofetch</span><br>
+        -----------------------------<br>
+        <span style="color:#888;">User:</span>     Danya Shagalin (DanShag)<br>
+        <span style="color:#888;">A.K.A.:</span>   DanyaShagalin / DanShag<br>
+        <span style="color:#888;">Birthday:</span> 18 мая<br>
+        <span style="color:#888;">OS:</span>       ShinshillaOS<br>
+        <span style="color:#888;">Location:</span> Magnitogorsk, RU<br>
+        <span style="color:#888;">Role:</span>     Content Creator & GFX<br>
+        <span style="color:#888;">Subs:</span>     200+<br>
+        <span style="color:#888;">Status:</span>   Vibecoding & Hardware
+      </div>
+    `;
+  } else if (cmd === 'whoami') {
+    const ua = navigator.userAgent;
+    let browser = "Неизвестный браузер";
+    if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Google Chrome / Chromium";
+    else if (ua.includes("Edg")) browser = "Microsoft Edge";
+    else if (ua.includes("Firefox")) browser = "Mozilla Firefox";
+    else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Apple Safari";
+
+    let os = "Неизвестная ОС";
+    if (ua.includes("Win")) os = "Windows";
+    else if (ua.includes("Mac")) os = "macOS";
+    else if (ua.includes("Android")) os = "Android";
+    else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+    else if (ua.includes("Linux")) os = "Linux";
+
+    const isMobile = document.body.classList.contains('mobile-mode') || /Android|iPhone|iPad/i.test(ua);
+
+    res.innerHTML = `
+      <div style="color: #00ffcc; font-family: monospace; font-size: 11px; line-height: 1.4;">
+        <b style="color: #ffff00;">[WHOAMI SYSTEM DETECTOR]</b><br>
+        - <span style="color: #aaa;">Клиент:</span> <span style="color: #fff;">Гость @ DanShag OS</span><br>
+        - <span style="color: #aaa;">ОС:</span> <span style="color: #fff;">${os}</span><br>
+        - <span style="color: #aaa;">Браузер:</span> <span style="color: #fff;">${browser}</span><br>
+        - <span style="color: #aaa;">Разрешение экрана:</span> <span style="color: #fff;">${screen.width}x${screen.height} (Окно: ${window.innerWidth}x${window.innerHeight})</span><br>
+        - <span style="color: #aaa;">Режим устройства:</span> <span style="color: #fff;">${isMobile ? 'Мобильный (Phone/Tablet)' : 'ПК (Desktop PC)'}</span><br>
+        - <span style="color: #aaa;">Язык:</span> <span style="color: #fff;">${navigator.language || 'ru-RU'}</span><br>
+        - <span style="color: #aaa;">Время:</span> <span style="color: #fff;">${new Date().toLocaleTimeString()}</span>
+      </div>
+    `;
+  } else if (cmd === 'matrix' || cmd === 'matrix on' || cmd === 'matrix off') {
+    const isActive = toggleMatrixRainEffect();
+    res.innerHTML = `<span style="color: #00ff00;">[MATRIX] Цифровой дождь ${isActive ? 'ЗАПУЩЕН' : 'ОСТАНОВЛЕН'}.</span>`;
+  } else if (cmd === 'bsod' || cmd === 'crash') {
+    res.innerHTML = `<span style="color: #ff3333;">[CRASH] Инициализация сбоя ядра системы...</span>`;
+    output.appendChild(res);
+    output.scrollTop = output.scrollHeight;
+    setTimeout(() => {
+      triggerBSODOverlay();
+    }, 600);
+    return;
   } else if (cmd === 'exit') {
     closeWindow('win-cmd');
     return;
@@ -2202,7 +2277,6 @@ function executeCommand(input) {
     executeSystemDestruction(output);
     return;
   } else if (cmd === '') {
-
     return;
   } else {
     res.textContent = `"${input}" не является внутренней или внешней командой, исполняемой программой или пакетным файлом.`;
@@ -2210,6 +2284,97 @@ function executeCommand(input) {
 
   output.appendChild(res);
   output.scrollTop = output.scrollHeight;
+}
+
+// --------------------------------------------------------------------------
+// ЛОГИКА МАТРИЧНОГО ДОЖДЯ ('matrix')
+// --------------------------------------------------------------------------
+let matrixAnimationId = null;
+function toggleMatrixRainEffect() {
+  const canvas = document.getElementById('matrix-rain-canvas');
+  if (!canvas) return false;
+
+  if (canvas.style.display === 'block') {
+    canvas.style.display = 'none';
+    if (matrixAnimationId) cancelAnimationFrame(matrixAnimationId);
+    matrixAnimationId = null;
+    return false;
+  }
+
+  canvas.style.display = 'block';
+  const parent = canvas.parentElement || document.body;
+  canvas.width = parent.clientWidth || window.innerWidth;
+  canvas.height = parent.clientHeight || window.innerHeight;
+
+  const ctx = canvas.getContext('2d');
+  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ';
+  const fontSize = 14;
+  const columns = Math.floor(canvas.width / fontSize);
+  const drops = [];
+
+  for (let i = 0; i < columns; i++) {
+    drops[i] = Math.floor(Math.random() * -100);
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#00ff66';
+    ctx.font = `${fontSize}px monospace`;
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars.charAt(Math.floor(Math.random() * chars.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+
+    matrixAnimationId = requestAnimationFrame(draw);
+  }
+
+  draw();
+  return true;
+}
+
+// --------------------------------------------------------------------------
+// ЛОГИКА BSOD (СИНИЙ ЭКРАН СМЕРТИ) ('bsod')
+// --------------------------------------------------------------------------
+function triggerBSODOverlay() {
+  const bsod = document.getElementById('bsod-overlay');
+  if (!bsod) return;
+
+  bsod.innerHTML = `
+A problem has been detected and ShinshillaOS has been shut down to prevent damage to your computer.
+
+MANUAL_CRASH_COMMAND_TRIGGERED (0x000000BSOD)
+
+If this is the first time you've seen this Stop error screen,
+restart your computer. If this screen appears again, follow these steps:
+
+Check to make sure any new hardware or software is properly installed.
+If this is a new installation, ask your hardware or software manufacturer
+for any ShinshillaOS updates you might need.
+
+Technical information:
+*** STOP: 0x0000007B (0xF78D2524, 0xC0000034, 0x00000000, 0x00000000)
+
+Collecting data for crash dump...
+Initializing disk for crash dump...
+Dumping physical memory to disk: 100%
+Physical memory dump complete.
+Rebooting system...`;
+
+  bsod.style.display = 'block';
+
+  // Автоматический перезапуск через 3.5 секунды
+  setTimeout(() => {
+    bsod.style.display = 'none';
+    triggerWhoamiIntroAnimation();
+  }, 3500);
 }
 
 function focusCmdInput() {
@@ -2345,5 +2510,277 @@ function runStfuOption() {
     }
   }, 500);
 }
+
+// ==========================================================================
+// ЛОГИКА ДЛЯ ОКНА "КТО ТЫ?" (NEOFETCH SIDEBAR, ЗВЁЗДЫ, ТАБЫ, DISCORD)
+// ==========================================================================
+
+function triggerWhoamiIntroAnimation() {
+  const win = document.getElementById('win-whoami');
+  if (!win) return;
+
+  win.classList.remove('animate-intro');
+  void win.offsetWidth; // force reflow
+  win.classList.add('animate-intro');
+
+  initWhoamiStarsCanvas();
+}
+
+function switchWhoamiTab(tabId) {
+  const tabs = ['bio', 'socials', 'history'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`tab-btn-${t}`);
+    const content = document.getElementById(`whoami-tab-${t}`);
+    if (btn) btn.classList.toggle('active', t === tabId);
+    if (content) {
+      content.style.display = (t === tabId) ? 'block' : 'none';
+      if (t === tabId) {
+        content.classList.add('active');
+      } else {
+        content.classList.remove('active');
+      }
+    }
+  });
+}
+
+function copyDiscordHandle(handle, event) {
+  if (event) event.preventDefault();
+  const textToCopy = handle || 'danshag';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      showRetroToast(`Скопировано "${textToCopy}" в буфер!`);
+    }).catch(() => {
+      showRetroToast(`Discord: ${textToCopy}`);
+    });
+  } else {
+    showRetroToast(`Discord: ${textToCopy}`);
+  }
+}
+
+function showRetroToast(message) {
+  let toast = document.getElementById('retro-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'retro-toast';
+    toast.className = 'retro-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2500);
+}
+
+let whoamiStarsAnimationId = null;
+function initWhoamiStarsCanvas() {
+  const canvas = document.getElementById('whoami-stars-canvas');
+  if (!canvas) return;
+
+  const sidebar = document.getElementById('whoami-sidebar');
+  if (!sidebar) return;
+
+  if (sidebar.clientWidth === 0) {
+    setTimeout(initWhoamiStarsCanvas, 150);
+    return;
+  }
+
+  canvas.width = sidebar.clientWidth || 265;
+  canvas.height = sidebar.clientHeight || 480;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  if (whoamiStarsAnimationId) {
+    cancelAnimationFrame(whoamiStarsAnimationId);
+  }
+
+  const numStars = 25;
+  const numMeteors = 6;
+  const stars = [];
+  const meteors = [];
+
+  for (let i = 0; i < numStars; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 1.2 + 0.5,
+      alpha: Math.random() * 0.7 + 0.3,
+      speed: Math.random() * 0.02 + 0.005
+    });
+  }
+
+  function resetMeteor(m) {
+    m.x = Math.random() * (canvas.width + 100) - 50;
+    m.y = -20;
+    m.length = Math.random() * 40 + 20;
+    m.speed = Math.random() * 1.2 + 0.6;
+    m.alpha = Math.random() * 0.6 + 0.4;
+    m.width = Math.random() * 1.2 + 0.6;
+    m.dx = 0.6;
+    m.dy = 1.0;
+  }
+
+  for (let i = 0; i < numMeteors; i++) {
+    const m = {};
+    resetMeteor(m);
+    m.y = Math.random() * canvas.height;
+    meteors.push(m);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Звёзды
+    stars.forEach(s => {
+      s.alpha += s.speed;
+      if (s.alpha > 1 || s.alpha < 0.2) {
+        s.speed = -s.speed;
+      }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+      ctx.fill();
+    });
+
+    // Падающие звёзды (метеоры)
+    meteors.forEach(m => {
+      m.x += m.speed * m.dx;
+      m.y += m.speed * m.dy;
+
+      if (m.y > canvas.height + 40 || m.x > canvas.width + 40) {
+        resetMeteor(m);
+      }
+
+      const tailX = m.x - m.length * m.dx;
+      const tailY = m.y - m.length * m.dy;
+
+      const grad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+      grad.addColorStop(0, `rgba(255, 255, 255, ${m.alpha})`);
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = m.width;
+      ctx.stroke();
+    });
+
+    whoamiStarsAnimationId = requestAnimationFrame(draw);
+  }
+
+  draw();
+}
+
+// --------------------------------------------------------------------------
+// КОСМИЧЕСКИЙ ФОН ЗА РАМКАМИ МОНИТОРА (ПАДАЮЩИЕ ЗВЁЗДЫ)
+// --------------------------------------------------------------------------
+let outerStarsAnimationId = null;
+function initOuterStarsCanvas() {
+  const canvas = document.getElementById('outer-stars-canvas');
+  if (!canvas) return;
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  if (outerStarsAnimationId) {
+    cancelAnimationFrame(outerStarsAnimationId);
+  }
+
+  const numStars = 80;
+  const numMeteors = 12;
+  const stars = [];
+  const meteors = [];
+
+  for (let i = 0; i < numStars; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 1.5 + 0.5,
+      alpha: Math.random() * 0.8 + 0.2,
+      speed: Math.random() * 0.015 + 0.003
+    });
+  }
+
+  function resetMeteor(m) {
+    m.x = Math.random() * (canvas.width + 200) - 100;
+    m.y = -40;
+    m.length = Math.random() * 60 + 30;
+    m.speed = Math.random() * 1.5 + 0.8;
+    m.alpha = Math.random() * 0.7 + 0.3;
+    m.width = Math.random() * 1.5 + 0.8;
+    m.dx = 0.6;
+    m.dy = 1.0;
+  }
+
+  for (let i = 0; i < numMeteors; i++) {
+    const m = {};
+    resetMeteor(m);
+    m.y = Math.random() * canvas.height;
+    meteors.push(m);
+  }
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Мерцающие звёзды
+    stars.forEach(s => {
+      s.alpha += s.speed;
+      if (s.alpha > 1 || s.alpha < 0.2) {
+        s.speed = -s.speed;
+      }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+      ctx.fill();
+    });
+
+    // Падающие метеоры
+    meteors.forEach(m => {
+      m.x += m.speed * m.dx;
+      m.y += m.speed * m.dy;
+
+      if (m.y > canvas.height + 60 || m.x > canvas.width + 60) {
+        resetMeteor(m);
+      }
+
+      const tailX = m.x - m.length * m.dx;
+      const tailY = m.y - m.length * m.dy;
+
+      const grad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+      grad.addColorStop(0, `rgba(255, 255, 255, ${m.alpha})`);
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = m.width;
+      ctx.stroke();
+    });
+
+    outerStarsAnimationId = requestAnimationFrame(draw);
+  }
+
+  draw();
+}
+
+// Автоматический запуск внешнего космоса при загрузке
+document.addEventListener('DOMContentLoaded', () => {
+  initOuterStarsCanvas();
+});
+setTimeout(() => {
+  initOuterStarsCanvas();
+}, 200);
 
 

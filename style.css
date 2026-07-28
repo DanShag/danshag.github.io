@@ -38,11 +38,8 @@ body,
 html {
   width: 100%;
   height: 100%;
-  background-color: #050505;
-  background-image: url('./assets/outer_bg.jpg'), linear-gradient(135deg, #121215 0%, #202028 100%);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-color: #030308 !important;
+  background-image: none !important;
   font-family: '8bitoperator', monospace;
   overflow: hidden;
   display: flex;
@@ -2830,4 +2827,430 @@ body.mobile-mode .settings-columns-container .block-green {
   border-left-color: #00ff00 !important;
 }
 
-
+/* ==========================================================================
+   СТИЛИ ДЛЯ ОКНА "КТО ТЫ?" (NEOFETCH SIDEBAR + СОЦСЕТИ + ИСТОРИЯ)
+   ========================================================================== */
+
+#win-whoami {
+  position: absolute !important;
+  top: 48% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 90vw !important;
+  max-width: 860px !important;
+  height: 82vh !important;
+  max-height: 520px !important;
+  margin: 0 !important;
+}
+
+.whoami-window-body {
+  display: flex !important;
+  flex-direction: row !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background-color: #0b0b12 !important;
+  height: calc(100% - 34px) !important;
+}
+
+/* Левая Neofetch панель */
+.whoami-sidebar {
+  position: relative !important;
+  width: 290px !important;
+  min-width: 280px !important;
+  flex-shrink: 0 !important;
+  background-color: #040407 !important;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 12px 10px 14px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+
+.whoami-stars-canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  opacity: 0.75 !important;
+}
+
+.whoami-sidebar-content {
+  position: relative !important;
+  z-index: 2 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  min-height: 100% !important;
+  gap: 14px !important;
+}
+
+/* ASCII Logo styling & smooth dark color cycling */
+.ascii-logo-pre {
+  font-family: monospace !important;
+  font-size: 6.5px !important;
+  line-height: 0.92 !important;
+  letter-spacing: 0px !important;
+  display: block !important;
+  width: fit-content !important;
+  margin: 0 auto 16px auto !important;
+  text-align: center !important;
+  overflow: hidden !important;
+  white-space: pre !important;
+  background: transparent !important;
+  border: none !important;
+  color: #007799;
+  animation: ascii-color-shift 12s infinite linear;
+
+  /* Принудительный сдвиг вверх (меняйте от -30px до -80px) */
+  transform: translateY(-60px) !important;
+}
+
+@keyframes ascii-color-shift {
+  0% {
+    color: #007799;
+    text-shadow: 0 0 5px rgba(0, 119, 153, 0.3);
+  }
+
+  25% {
+    color: #770099;
+    text-shadow: 0 0 5px rgba(119, 0, 153, 0.3);
+  }
+
+  50% {
+    color: #009944;
+    text-shadow: 0 0 5px rgba(0, 153, 68, 0.3);
+  }
+
+  75% {
+    color: #994400;
+    text-shadow: 0 0 5px rgba(153, 68, 0, 0.3);
+  }
+
+  100% {
+    color: #007799;
+    text-shadow: 0 0 5px rgba(0, 119, 153, 0.3);
+  }
+}
+
+/* Вступительная анимация: моргание ASCII лого + плавный выезд текста слева */
+@keyframes ascii-blink-intro {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  20%,
+  60% {
+    opacity: 0.15;
+  }
+
+  40%,
+  80% {
+    opacity: 0.9;
+  }
+}
+
+#win-whoami.animate-intro .ascii-logo-pre {
+  animation: ascii-blink-intro 0.7s ease 1, ascii-color-shift 12s infinite linear 0.7s !important;
+}
+
+.neofetch-info-block {
+  font-family: '8bitoperator', monospace !important;
+  font-size: 10.5px !important;
+  line-height: 1.55 !important;
+  color: #bbbbcc !important;
+  opacity: 0;
+  transform: translateX(-35px);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease !important;
+}
+
+#win-whoami.animate-intro .neofetch-info-block,
+#win-whoami:not(.animate-intro) .neofetch-info-block {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+#win-whoami.animate-intro .neofetch-info-block {
+  transition-delay: 0.7s !important;
+  /* Ждет завершения моргания лого */
+}
+
+.neofetch-line {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 4px !important;
+  margin-bottom: 2px !important;
+}
+
+.neofetch-key {
+  color: #00ffcc !important;
+  font-weight: bold !important;
+}
+
+.neofetch-val {
+  color: #ffffff !important;
+  text-align: right !important;
+}
+
+/* Правая основная панель */
+.whoami-main-panel {
+  flex: 1 !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+}
+
+.whoami-header-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  padding-bottom: 8px !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.whoami-nav-buttons {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.whoami-tab-btn {
+  font-family: '8bitoperator', monospace !important;
+  font-size: 10px !important;
+  padding: 4px 10px !important;
+  background-color: #161622 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 3px !important;
+  color: #aaaaaa !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.whoami-tab-btn:hover,
+.whoami-tab-btn.active {
+  background-color: #242436 !important;
+  color: #ffffff !important;
+  border-color: #00ffcc !important;
+  box-shadow: 0 0 6px rgba(0, 255, 204, 0.3) !important;
+}
+
+/* Карточки соцсетей */
+.socials-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+  gap: 10px !important;
+  padding-top: 4px !important;
+}
+
+.social-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 12px !important;
+  background: rgba(22, 22, 34, 0.75) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease !important;
+}
+
+.social-card:hover {
+  background: rgba(38, 38, 58, 0.95) !important;
+  border-color: rgba(0, 255, 204, 0.5) !important;
+  transform: translateY(-2px) !important;
+}
+
+.social-icon-wrapper {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Анимация прокрутки иконки на 360 градусов один раз при наведении */
+.social-icon {
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+.social-card:hover .social-icon {
+  transform: rotate(360deg) !important;
+}
+
+.social-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  overflow: hidden !important;
+}
+
+.social-name-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.social-name {
+  font-size: 11px !important;
+  font-weight: bold !important;
+  color: #ffffff !important;
+}
+
+.social-handle {
+  font-size: 9px !important;
+  color: #8888aa !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.badge-inactive {
+  font-size: 8px !important;
+  background-color: #cc0000 !important;
+  color: #ffffff !important;
+  padding: 1px 4px !important;
+  border-radius: 2px !important;
+  font-weight: bold !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* История канала (Timeline) */
+.history-timeline {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 4px 0 !important;
+}
+
+.history-item {
+  display: flex !important;
+  gap: 12px !important;
+  align-items: flex-start !important;
+  background: rgba(22, 22, 34, 0.6) !important;
+  border-left: 3px solid #00ffcc !important;
+  padding: 10px 12px !important;
+  border-radius: 3px !important;
+}
+
+.history-badge {
+  font-family: '8bitoperator', monospace !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  background: #00ffcc !important;
+  color: #000000 !important;
+  padding: 2px 6px !important;
+  border-radius: 2px !important;
+  flex-shrink: 0 !important;
+}
+
+.history-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.history-title {
+  margin: 0 !important;
+  font-size: 11px !important;
+  color: #ffffff !important;
+}
+
+.history-text {
+  margin: 0 !important;
+  font-size: 10px !important;
+  color: #aaaaaa !important;
+  line-height: 1.4 !important;
+}
+
+/* Ретро-уведомление для копирования Discord */
+.retro-toast {
+  position: fixed !important;
+  bottom: 45px !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(20px) !important;
+  background-color: #12121a !important;
+  border: 1.5px solid #00ffcc !important;
+  color: #ffffff !important;
+  padding: 8px 16px !important;
+  border-radius: 4px !important;
+  font-family: '8bitoperator', monospace !important;
+  font-size: 11px !important;
+  z-index: 20000 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 255, 204, 0.4) !important;
+  opacity: 0 !important;
+  transition: all 0.3s ease !important;
+  pointer-events: none !important;
+}
+
+.retro-toast.show {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+/* Мобильная адаптация для "Кто ты?" */
+body.mobile-mode .whoami-window-body {
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+body.mobile-mode .whoami-sidebar {
+  width: 100% !important;
+  min-width: 0 !important;
+  border-right: none !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 10px !important;
+}
+
+body.mobile-mode .ascii-logo-pre {
+  font-size: 4.2px !important;
+  line-height: 0.92 !important;
+  transform: none !important;
+  margin: 0 auto 8px auto !important;
+}
+
+body.mobile-mode .socials-grid {
+  grid-template-columns: 1fr !important;
+}
+
+/* Полноэкранный матричный дождь (Команда 'matrix') */
+#matrix-rain-canvas {
+  display: none;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 99998 !important;
+  pointer-events: none !important;
+  opacity: 0.9 !important;
+}
+
+/* Полноэкранный Синий Экран Смерти (Команда 'bsod') */
+#bsod-overlay {
+  display: none;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #0000aa !important;
+  color: #ffffff !important;
+  font-family: 'Consolas', 'Courier New', monospace !important;
+  padding: 50px 60px !important;
+  box-sizing: border-box !important;
+  z-index: 99999 !important;
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  white-space: pre-wrap !important;
+  overflow: hidden !important;
+  user-select: none !important;
+}

@@ -12,6 +12,10 @@
 
 <body>
 
+  <!-- Внешний космический фон с падающими звёздами за рамками монитора -->
+  <canvas id="outer-stars-canvas"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; opacity: 1; background-color: #030308;"></canvas>
+
   <!-- Глитч-оверлей для вспышек и помех -->
   <div class="glitch-overlay"></div>
 
@@ -28,6 +32,12 @@
     <div class="monitor-bezel">
       <!-- Глитчащиеся обои -->
       <div class="desktop-wallpaper"></div>
+
+      <!-- Полноэкранный матричный дождь (Команда 'matrix') -->
+      <canvas id="matrix-rain-canvas"></canvas>
+
+      <!-- Полноэкранный BSOD (Команда 'bsod') -->
+      <div id="bsod-overlay"></div>
 
       <div id="desktop-container">
         <!-- Верхняя статус-панель для мобильной версии -->
@@ -386,26 +396,246 @@
                 <button class="win-btn btn-close" onclick="closeWindow('win-whoami')">X</button>
               </div>
             </div>
-            <div class="window-body">
-              <h2 class="section-title">DanShag - это...</h2>
+            <div class="window-body whoami-window-body">
+              <!-- Левая панель в стиле Neofetch терминала -->
+              <div class="whoami-sidebar" id="whoami-sidebar">
+                <canvas id="whoami-stars-canvas" class="whoami-stars-canvas"></canvas>
+                <div class="whoami-sidebar-content">
+                  <pre class="ascii-logo-pre" id="ascii-logo">
+███████████████████▓
+██████████████████████████
+████████████████████████████▓
+███████▓▓▓▓███▓▓███████████████
+███████               ███████████
+███████                  █████████
+███████                   ▓████████
+███████                    ██████████████████
+███████                     ████████████████████
+███████                     ██████████████████████
+███████                    █████████     █████████▓
+███████                   ▓█████████▓      ▓███████
+███████                   ██████████        ████████
+███████                   ██████████
+███████                   ▓████████▓
+███████                    ██████████
+███████                   █████████████████
+███████                ███████████████████████▓
+███████             ████████████ █████████████████
+██████████████████████████████        ▓████████████
+████████████████████████████              ██████████
+███████████████████████▓                     ████████
+                                              ███████
+                        ████████              ███████
+                         ████████            ▓███████
+                         ▓████████          ████████
+                          ▓███████████  ███████████
+                            █████████████████████▓
+                              █████████████████▓
+                                 ██████████▓</pre>
 
-              <div class="info-block block-blue">
-                <h3 class="subsection-title">Основное</h3>
-                <div class="block-content">
-                  Приветствую! Меня зовут Данила, в интернете на данный момент известен как DanShag (Danya Shagalin).
-                  Родился 18 мая в России, Магнитогорск <br><br>В своё время снимал техноблог, с помощью чего
-                  набрал подписчиков, но после этого решил забросить эту тему.
-                  В итоге - пересоздал канал и создал формат
-                  по мульти-тематике. И на данный момент веду его по сей день.<br\>
-                    <br\>
+                  <div class="neofetch-info-block" id="neofetch-info">
+                    <div class="neofetch-line"><span class="neofetch-key">User:</span> <span class="neofetch-val">Danya
+                        Shagalin (DanShag)</span></div>
+                    <div class="neofetch-line"><span class="neofetch-key">A.K.A.:</span> <span
+                        class="neofetch-val">DanyaShagalin / DanShag</span></div>
+                    <div class="neofetch-line"><span class="neofetch-key">Birthday:</span> <span class="neofetch-val">18
+                        мая</span></div>
+                    <div class="neofetch-line"><span class="neofetch-key">OS:</span> <span
+                        class="neofetch-val">ShinshillaOS</span></div>
+                    <div class="neofetch-line"><span class="neofetch-key">Location:</span> <span
+                        class="neofetch-val">Magnitogorsk, RU</span></div>
+                    <div class="neofetch-line"><span class="neofetch-key">Role:</span> <span
+                        class="neofetch-val">Content Creator & GFX</span></div>
+                    <div class="neofetch-line"><span class="neofetch-key">Subs:</span> <span
+                        class="neofetch-val">200+</span></div>
+                  </div>
                 </div>
               </div>
 
-              <div class="info-block block-red">
-                <h3 class="subsection-title">Увлечения/интересы/вкусы</h3>
-                <div class="block-content">
-                  Занимаюсь контент-мейкерством (такое слово вообще есть?), монтажом и GFX-дизайном. Немного увлекаюсь кодом, но этот сайт - чистый вайбкодинг: мне хотелось сделать хороший и конкретный стиль, который я бы никогда не сделал сам.
-                  <br><br>Помимо визуала, уже больше половины жизни я глубоко погружён в тему компьютерного железа и софта. Кроме всего я обожаю музыку, мой топ-10 треков можете послушать в "Плеере".<br\><br\>
+              <!-- Правая основная панель -->
+              <div class="whoami-main-panel">
+                <div class="whoami-header-bar">
+                  <h2 class="section-title" style="margin-bottom: 0;">DanShag - это...</h2>
+                  <div class="whoami-nav-buttons">
+                    <button class="whoami-tab-btn active" id="tab-btn-bio"
+                      onclick="switchWhoamiTab('bio')">Основное</button>
+                    <button class="whoami-tab-btn" id="tab-btn-socials"
+                      onclick="switchWhoamiTab('socials')">Соцсети</button>
+                    <button class="whoami-tab-btn" id="tab-btn-history" onclick="switchWhoamiTab('history')">История
+                      канала</button>
+                  </div>
+                </div>
+
+                <!-- Таб 1: Основное -->
+                <div class="whoami-tab-content active" id="whoami-tab-bio">
+                  <div class="info-block block-blue">
+                    <h3 class="subsection-title">Основное</h3>
+                    <div class="block-content">
+                      Приветствую! Меня зовут Данила, в интернете на данный момент известен как DanShag (Danya
+                      Shagalin).
+                      Родился 18 мая в России, Магнитогорск <br><br>В своё время снимал техноблог, с помощью чего
+                      набрал подписчиков, но после этого решил забросить эту тему.
+                      В итоге - пересоздал канал и создал формат
+                      по мульти-тематике. И на данный момент веду его по сей день.
+                      <br\>
+                        <br\>
+                    </div>
+                  </div>
+
+                  <div class="info-block block-red">
+                    <h3 class="subsection-title">Увлечения/интересы/вкусы</h3>
+                    <div class="block-content">
+                      Занимаюсь контент-мейкерством (такое слово вообще есть?), монтажом и GFX-дизайном. Немного
+                      увлекаюсь
+                      кодом, но этот сайт - чистый вайбкодинг: мне хотелось сделать хороший и конкретный стиль, который
+                      я бы никогда не сделал сам.
+                      <br\>
+                        <br\>Помимо визуала, уже больше половины жизни я глубоко погружён в тему компьютерного железа и
+                          софта. Кроме всего я обожаю музыку, мой топ-10 треков можете послушать в "Плеере".<br\>
+                            <br\>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Таб 2: Соцсети -->
+                <div class="whoami-tab-content" id="whoami-tab-socials" style="display: none;">
+                  <div class="socials-grid">
+                    <!-- YouTube -->
+                    <a href="https://www.youtube.com/@DanyaShagalin" target="_blank" class="social-card card-youtube">
+                      <div class="social-icon-wrapper">
+                        <svg class="pixel-icon social-icon" viewBox="0 0 32 32" width="28" height="28">
+                          <rect x="2" y="6" width="28" height="20" rx="5" fill="#FF0000" />
+                          <polygon points="13,11 21,16 13,21" fill="#ffffff" />
+                        </svg>
+                      </div>
+                      <div class="social-info">
+                        <span class="social-name">YouTube</span>
+                        <span class="social-handle">@DanyaShagalin</span>
+                      </div>
+                    </a>
+
+                    <!-- Telegram -->
+                    <a href="https://t.me/@DanShag" target="_blank" class="social-card card-telegram">
+                      <div class="social-icon-wrapper">
+                        <img src="assets/ico/telegramico.jpg" class="pixel-icon social-icon" width="28" height="28"
+                          style="border-radius: 50%; object-fit: cover;" alt="Telegram" />
+                      </div>
+                      <div class="social-info">
+                        <span class="social-name">Telegram</span>
+                        <span class="social-handle">@DanShag</span>
+                      </div>
+                    </a>
+
+                    <!-- TGC (Telegram Channel) -->
+                    <a href="https://t.me/blogedanya" target="_blank" class="social-card card-tgc">
+                      <div class="social-icon-wrapper">
+                        <img src="assets/ico/telegramico.jpg" class="pixel-icon social-icon" width="28" height="28"
+                          style="border-radius: 50%; object-fit: cover;" alt="TGC" />
+                      </div>
+                      <div class="social-info">
+                        <span class="social-name">TGC (Канал)</span>
+                        <span class="social-handle">@blogedanya</span>
+                      </div>
+                    </a>
+
+                    <!-- GitHub -->
+                    <a href="https://github.com/DanShag" target="_blank" class="social-card card-github">
+                      <div class="social-icon-wrapper">
+                        <svg class="pixel-icon social-icon" viewBox="0 0 32 32" width="28" height="28">
+                          <circle cx="16" cy="16" r="15" fill="#24292e" />
+                          <path
+                            d="M16,5 C9.9,5 5,9.9 5,16 C5,20.9 8.2,25 12.6,26.4 C13.1,26.5 13.3,26.2 13.3,25.9 L13.3,23.8 C10.2,24.5 9.6,22.5 9.6,22.5 C9.1,21.2 8.3,20.9 8.3,20.9 C7.3,20.2 8.4,20.2 8.4,20.2 C9.5,20.3 10.1,21.3 10.1,21.3 C11.1,23 12.7,22.5 13.3,22.2 C13.4,21.5 13.7,21 14,20.7 C11.5,20.4 8.9,19.4 8.9,15 C8.9,13.7 9.4,12.7 10.2,11.9 C10.1,11.6 9.7,10.4 10.3,8.8 C10.3,8.8 11.3,8.5 13.6,10 C14.6,9.7 15.6,9.6 16.6,9.6 C17.6,9.6 18.6,9.7 19.6,10 C21.9,8.5 22.9,8.8 22.9,8.8 C23.5,10.4 23.1,11.6 23,11.9 C23.8,12.7 24.3,13.7 24.3,15 C24.3,19.5 21.7,20.4 19.2,20.7 C19.6,21.1 20,21.8 20,22.9 L20,25.9 C20,26.2 20.2,26.5 20.7,26.4 C25.1,25 28.3,20.9 28.3,16 C28.3,9.9 23.4,5 16,5 Z"
+                            fill="#ffffff" />
+                        </svg>
+                      </div>
+                      <div class="social-info">
+                        <span class="social-name">GitHub</span>
+                        <span class="social-handle">@DanShag</span>
+                      </div>
+                    </a>
+
+                    <!-- Spotify -->
+                    <a href="https://open.spotify.com/user/31bje4thun3fvezk3f25vzthjxqu?si=5d11d49a60b142d1"
+                      target="_blank" class="social-card card-spotify">
+                      <div class="social-icon-wrapper">
+                        <svg class="pixel-icon social-icon" viewBox="0 0 32 32" width="28" height="28">
+                          <circle cx="16" cy="16" r="15" fill="#1DB954" />
+                          <path
+                            d="M7,12 C13,10 20,11 24,13.5 M8,16.5 C13.5,14.8 19.5,15.5 23,17.5 M9.5,21 C14,19.6 18.5,20 21.5,21.5"
+                            stroke="#000000" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                        </svg>
+                      </div>
+                      <div class="social-info">
+                        <div class="social-name-row">
+                          <span class="social-name">Spotify</span>
+                          <span class="badge-inactive">НЕАКТИВ</span>
+                        </div>
+                        <span class="social-handle">@DanShag</span>
+                      </div>
+                    </a>
+
+                    <!-- Steam -->
+                    <a href="https://steamcommunity.com/id/DanShag/" target="_blank" class="social-card card-steam">
+                      <div class="social-icon-wrapper">
+                        <img src="assets/ico/steamico.jpg" class="pixel-icon social-icon" width="28" height="28"
+                          style="border-radius: 4px; object-fit: cover;" alt="Steam" />
+                      </div>
+                      <div class="social-info">
+                        <span class="social-name">Steam</span>
+                        <span class="social-handle">id/DanShag</span>
+                      </div>
+                    </a>
+
+                    <!-- Discord -->
+                    <div class="social-card card-discord" onclick="copyDiscordHandle('danshag', event)">
+                      <div class="social-icon-wrapper">
+                        <svg class="pixel-icon social-icon" viewBox="0 0 32 32" width="28" height="28">
+                          <rect x="1" y="1" width="30" height="30" rx="7" fill="#5865F2" />
+                          <path
+                            d="M22.5,9.5 C21.2,8.9 19.8,8.5 18.3,8.2 C18.1,8.6 17.9,9 17.7,9.4 C16.1,9.2 14.5,9.2 12.9,9.4 C12.7,9 12.5,8.6 12.3,8.2 C10.8,8.5 9.4,8.9 8.1,9.5 C5.5,13.4 4.8,17.2 5.1,21 C6.8,22.3 8.5,23.1 10.1,23.6 C10.5,23.1 10.9,22.5 11.2,21.9 C10.6,21.7 10,21.4 9.5,21.1 C9.6,21 9.7,20.9 9.8,20.8 C13.2,22.4 16.9,22.4 20.2,20.8 C20.3,20.9 20.4,21 20.5,21.1 C20,21.4 19.4,21.7 18.8,21.9 C19.1,22.5 19.5,23.1 19.9,23.6 C21.5,23.1 23.2,22.3 24.9,21 C25.3,16.6 24.2,12.8 22.5,9.5 Z M11.8,18.5 C10.8,18.5 10,17.6 10,16.5 C10,15.4 10.8,14.5 11.8,14.5 C12.8,14.5 13.6,15.4 13.6,16.5 C13.6,17.6 12.8,18.5 11.8,18.5 Z M19.8,18.5 C18.8,18.5 18,17.6 18,16.5 C18,15.4 18.8,14.5 19.8,14.5 C20.8,14.5 21.6,15.4 21.6,16.5 C21.6,17.6 20.8,18.5 19.8,18.5 Z"
+                            fill="#ffffff" />
+                        </svg>
+                      </div>
+                      <div class="social-info">
+                        <span class="social-name">Discord</span>
+                        <span class="social-handle">danshag (кликни для копирования)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Таб 3: История канала (Заглушка) -->
+                <div class="whoami-tab-content" id="whoami-tab-history" style="display: none;">
+                  <!-- ИНСТРУКЦИЯ ДЛЯ ДОБАВЛЕНИЯ ЭТАПОВ ИСТОРИИ КАНАЛА:
+                       Каждая запись добавляется в виде блока .history-item ниже.
+                  -->
+                  <div class="history-timeline">
+                    <div class="history-item">
+                      <div class="history-badge">2024</div>
+                      <div class="history-content">
+                        <h4 class="history-title">Старт и первые 1000 подписчиков</h4>
+                        <p class="history-text">Начало техноблога, обзоры железных решений и быстрый рост аудитории.</p>
+                      </div>
+                    </div>
+
+                    <div class="history-item">
+                      <div class="history-badge">2025</div>
+                      <div class="history-content">
+                        <h4 class="history-title">Перезапуск канала на мульти-тематику</h4>
+                        <p class="history-text">Закрытие старого формата и создание нового канала с роликами различной
+                          тематики.</p>
+                      </div>
+                    </div>
+
+                    <div class="history-item">
+                      <div class="history-badge">2026</div>
+                      <div class="history-content">
+                        <h4 class="history-title">Создание сайта-визитки DanShag OS</h4>
+                        <p class="history-text">Разработка уникального ретро-футуристического сайта в стиле Windows 2000
+                          / XP.</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -991,18 +1221,18 @@
               <h1 class="changelog-main-title">Changelog</h1>
               <div class="changelog-container">
 
-                <!-- ДЛЯ ДОБАВЛЕНИЯ НОВОЙ ВЕРСИИ СКОПИРУЙТЕ И ВСТАВЬТЕ БЛОК НИЖЕ:
                 <div class="changelog-entry">
-                  <h3 class="changelog-version">Версия от [ДАТА]</h3>
+                  <h3 class="changelog-version">>>> Доработка апдейта: 28/07/2026</h3>
                   <ul class="changelog-list">
-                    <li>‣   [ИЗМЕНЕНИЕ 1]</li>
-                    <li>‣   [ИЗМЕНЕНИЕ 2]</li>
+                    <li>‣ Полностью переработано окно "Кто ты?"</li>
+                    <li>‣ Мобильная версия оптимизирована.</li>
+                    <li>‣ Новые команды в CMD: "matrix, bsod, clear, whoami, neofetch"</li>
+                    <li>‣ Старый фон удалён, вместо них падающие звёзды, а также остальное улучшение визуала.</li>
                   </ul>
                 </div>
-                -->
 
                 <div class="changelog-entry">
-                  <h3 class="changelog-version">>>> 28 июля 2026 года</h3>
+                  <h3 class="changelog-version">>>> Глобальный апдейт: 28/07/2026</h3>
                   <ul class="changelog-list">
                     <li>‣ Была реализована полноценная поддержка смартфонов, путём добавления мобильной версии сайта.
                     </li>
@@ -1013,7 +1243,7 @@
                 </div>
 
                 <div class="changelog-entry">
-                  <h3 class="changelog-version">>>> 17 июля 2026 года</h3>
+                  <h3 class="changelog-version">>>> Релиз: 17/07/2026</h3>
                   <ul class="changelog-list">
                     <li>‣ Первый релиз сайта.</li>
                   </ul>
